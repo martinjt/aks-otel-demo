@@ -1,0 +1,3 @@
+name: aks-otel-demo
+runtime: dotnet
+description: AKS Cluster for the Otel demo
