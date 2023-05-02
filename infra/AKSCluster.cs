@@ -25,8 +25,6 @@ public class AKSCluster : ComponentResource
         {
             ApplicationId = adApp.ApplicationId
         });
-
-        // Create the Service Principal Password
         var adSpPassword = new ServicePrincipalPassword("aksSpPassword", new ServicePrincipalPasswordArgs
         {
             ServicePrincipalId = adSp.Id,
@@ -57,11 +55,10 @@ public class AKSCluster : ComponentResource
                 {
                     Count = 3,
                     MaxPods = 110,
-                    Mode = "System",
+                    Mode = AgentPoolMode.System,
                     Name = "agentpool",
-                    OsDiskSizeGB = 30,
-                    OsType = "Linux",
-                    Type = "VirtualMachineScaleSets",
+                    OsType = OSType.Linux,
+                    Type = AgentPoolType.VirtualMachineScaleSets,
                     VmSize = "Standard_DS2_v2",
                 }
             },
