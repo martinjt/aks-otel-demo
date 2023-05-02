@@ -13,3 +13,9 @@ az login
 ```
 
 Follow the prompts to get your credentials.
+
+Add the Honeycomb API Key
+
+```shell
+pulumi config set --secret honeycombKey <key>
+```

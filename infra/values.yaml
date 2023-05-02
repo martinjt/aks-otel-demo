@@ -1,0 +1,24 @@
+opentelemetry-collector:
+  image:
+    tag: "0.75.0"
+  config:
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+          http:
+            cors:
+              allowed_origins:
+                - http://*
+                - https://*
+            endpoint: 0.0.0.0:4318
+    exporters:
+      otlp/honeycomb:
+        endpoint: "api.honeycomb.io:443"
+        headers:
+          "x-honeycomb-team": ${HONEYCOMB_API_KEY}
+    service:
+      pipelines:
+        traces:
+          processors: [memory_limiter, batch]
+          exporters: [otlp, logging, otlp/honeycomb, spanmetrics]

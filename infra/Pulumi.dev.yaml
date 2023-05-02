@@ -1,3 +1,5 @@
 encryptionsalt: v1:mNKRvdAXHS4=:v1:qViy0YqCPQzj+9vB:4hPMLRr3QNG+ZASiSzAaEyfXSx5+Mw==
 config:
+  aks-otel-demo:honeycombKey:
+    secure: v1:LfB25EqG1Abq4cna:GkN076hWiaBuKuUCwtKjxWARCCW69gNrqcIXcaRih+H63zAClEI=
   azure-native:location: uksouth
