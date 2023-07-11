@@ -10,6 +10,7 @@ return await Pulumi.Deployment.RunAsync(() =>
     return new Dictionary<string, object?>
     {
         ["clusterName"] = cluster.ClusterName,
-        ["clusterResourceGroup"] = cluster.ClusterResourceGroup
+        ["clusterResourceGroup"] = cluster.ClusterResourceGroup,
+        ["ingressControllerIp"] = cluster.GatewayIp
     };
 });

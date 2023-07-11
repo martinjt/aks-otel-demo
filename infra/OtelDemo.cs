@@ -1,6 +1,5 @@
 using Pulumi;
 using Pulumi.Kubernetes.Helm.V3;
-using Pulumi.Kubernetes.Types.Inputs.Meta.V1;
 using Pulumi.Kubernetes.Networking.V1;
 using Pulumi.Kubernetes.Types.Inputs.Networking.V1;
 using Pulumi.Kubernetes.Types.Inputs.Helm.V3;
@@ -56,13 +55,8 @@ public class OtelDemo : ComponentResource
         });
 
         var ingress = new Ingress("otel-demo-frontend", new IngressArgs {
-            Metadata = new ObjectMetaArgs {
-                Annotations = {
-                    ["kubernetes.io/ingress.class"] = "azure/application-gateway",
-                    ["appgw.ingress.kubernetes.io/use-private-ip"] = "false"
-                }
-            },
             Spec = new IngressSpecArgs {
+                IngressClassName = "webapprouting.kubernetes.azure.com",
                 Rules = new IngressRuleArgs {
                     Http = new HTTPIngressRuleValueArgs {
                         Paths = new [] {

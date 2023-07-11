@@ -1,12 +1,19 @@
 using System;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Text;
+using Azure.Core;
 using Pulumi;
 using Pulumi.AzureAD;
-using Pulumi.AzureNative.ContainerService;
-using Pulumi.AzureNative.ContainerService.Inputs;
+using Pulumi.AzureNative.Compute;
+using Pulumi.AzureNative.ContainerService.V20230502Preview;
+using Pulumi.AzureNative.ContainerService.V20230502Preview.Inputs;
+using Pulumi.AzureNative.ContainerService.V20230502Preview.Outputs;
+using Pulumi.AzureNative.Network;
 using Pulumi.AzureNative.Resources;
 using Pulumi.Tls;
 using K8s = Pulumi.Kubernetes;
+using ResourceIdentityType = Pulumi.AzureNative.ContainerService.V20230502Preview.ResourceIdentityType;
 
 public class AKSCluster : ComponentResource
 {
@@ -38,33 +45,39 @@ public class AKSCluster : ComponentResource
             RsaBits = 4096
         });
 
+        var addonProfiles = new InputMap<ManagedClusterAddonProfileArgs>();
+        if (args.CreateApplicationGateway)
+            addonProfiles.Add("IngressApplicationGateway", new ManagedClusterAddonProfileArgs {
+                        Enabled = true,
+                        Config = {
+                            ["subnetCIDR"] = "10.225.0.0/16"
+                        }
+                    });
+
         var cluster = new ManagedCluster(name, new ManagedClusterArgs
         {
             ResourceGroupName = resourceGroup.Name,
-            AddonProfiles = {
-                ["IngressApplicationGateway"] = new ManagedClusterAddonProfileArgs {
-                    Enabled = true,
-                    Config = {
-                        ["subnetCIDR"] = "10.225.0.0/16"
-                    }
-                }
+            AddonProfiles = addonProfiles,
+            Identity = new ManagedClusterIdentityArgs
+            {
+                Type = ResourceIdentityType.SystemAssigned
             },
             AgentPoolProfiles =
             {
                 new ManagedClusterAgentPoolProfileArgs
                 {
-                    Count = 3,
+                    Count = 2,
                     MaxPods = 110,
                     Mode = AgentPoolMode.System,
                     Name = "agentpool",
                     OsType = OSType.Linux,
                     Type = AgentPoolType.VirtualMachineScaleSets,
-                    VmSize = "Standard_DS2_v2",
+                    VmSize = VirtualMachineSizeTypes.Standard_D2s_v3.ToString()
                 }
             },
-            DnsPrefix = "AzureNativeprovider",
+            DnsPrefix = "otel-demo",
             EnableRBAC = true,
-            KubernetesVersion = "1.26.3",
+            KubernetesVersion = "1.27.1",
             LinuxProfile = new ContainerServiceLinuxProfileArgs
             {
                 AdminUsername = "testuser",
@@ -79,7 +92,14 @@ public class AKSCluster : ComponentResource
                     }
                 }
             },
-            NodeResourceGroup = $"{name}-nodes",
+            IngressProfile = new ManagedClusterIngressProfileArgs
+            {
+                WebAppRouting = new ManagedClusterIngressProfileWebAppRoutingArgs
+                {
+                    Enabled = true,
+
+                }
+            },
             ServicePrincipalProfile = new ManagedClusterServicePrincipalProfileArgs
             {
                 ClientId = adApp.ApplicationId,
@@ -105,6 +125,8 @@ public class AKSCluster : ComponentResource
 
         this.ClusterName = cluster.Name;
         this.ClusterResourceGroup = resourceGroup.Name;
+        if (args.CreateApplicationGateway)
+            this.GatewayIp = cluster.AddonProfiles.GetApplicationGatewayIp();
     }
 
     [Output("clusterName")]
@@ -116,10 +138,52 @@ public class AKSCluster : ComponentResource
     [Output("kubeconfig")]
     public Output<string> KubeConfig { get; set; }
 
+    [Output("ingresscontroller")]
+    public Output<ImmutableDictionary<string, string>?> IngressController { get; set; }
+
+    [Output("GatewayIp")]
+    public Output<string?> GatewayIp { get; set; }
+
     public K8s.Provider Provider { get; set; }
 
 }
 
 public class AKSClusterArgs : Pulumi.ResourceArgs
 {
+    public bool CreateApplicationGateway { get; set; } = false;
+}
+
+internal static class ExtensionForCluster
+{
+    public static Output<string?> GetApplicationGatewayIp(this Output<ImmutableDictionary<string, ManagedClusterAddonProfileResponse>?> addonProfiles)
+    {
+        return addonProfiles.Apply(a =>
+        {
+            var appGatewayResourceId = new Azure.Core.ResourceIdentifier(
+                a!["IngressApplicationGateway"]!
+                    .Config!["effectiveApplicationGatewayId"]);
+
+            var appGatewayDetails = GetApplicationGateway.Invoke(new GetApplicationGatewayInvokeArgs
+            {
+                ApplicationGatewayName = appGatewayResourceId.Name,
+                ResourceGroupName = appGatewayResourceId.ResourceGroupName!
+            });
+            return appGatewayDetails.Apply<string?>(a =>
+            {
+                var publicIpId = a?.FrontendIPConfigurations.First()?
+                    .PublicIPAddress?.Id;
+                if (publicIpId == null)
+                    return "";
+
+                var publicIpResourceId = new ResourceIdentifier(publicIpId);
+                var publicIp = GetPublicIPAddress.Invoke(new GetPublicIPAddressInvokeArgs
+                {
+                    PublicIpAddressName = publicIpResourceId.Name,
+                    ResourceGroupName = publicIpResourceId.ResourceGroupName!
+                });
+                return publicIp.Apply(a => a.IpAddress);
+            });
+        });
+    }
+
 }
