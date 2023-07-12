@@ -1,4 +1,10 @@
 encryptionsalt: v1:JNtMMk2WkpU=:v1:PMoPqsmK7YxcNm1s:nugLzVQlmmg3yDJ0hUedpl7DD/GUEw==
 config:
+  aks-otel-demo:dns-zone-id:
+    secure: v1:dPBGVIp2ZGn5nkP1:tCXNIUvpvPYRm2+ZVAIBtxOj5ZhS2/xWZdvqIvrtn+eR5eMUzlK3m//7TSk30glBckbQKQ/7dSDWdWDSS/E0bJf1sTlx9zTR7TFFQtEu1ijuYTfEmSwoE0fe6sg/drmN6yGFwkLbXTxnDAopKcri2Ntf78N3A3rPvhkBw5OW1icDXcSj4QuMyE9ULH+ROYZ8z2cdeA==
+  aks-otel-demo:dns-zone-name:
+    secure: v1:OEkHk0IGXSaZ7I8D:HUpbLTvBeICjlGDSPewZDD4GBkH68zfwDUDeOJIaPT5EwQ==
+  aks-otel-demo:dns-zone-resource-group:
+    secure: v1:rOdZiH4jnTtXmXLX:7ncjL1KhR+YbJRMaS+n87hHFKucoDW7ttQ==
   aks-otel-demo:honeycombKey: Ru255IJbfspxl2Gmj63MTF
   azure-native:location: uksouth

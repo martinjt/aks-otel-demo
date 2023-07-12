@@ -19,3 +19,9 @@ Add the Honeycomb API Key
 ```shell
 pulumi config set --secret honeycombKey <key>
 ```
+
+Add the DNS zone config
+
+```shell
+pulumi config set --secret dns-zone-id <resourceId for the DNS zone>
+```

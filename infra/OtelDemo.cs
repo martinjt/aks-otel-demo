@@ -58,6 +58,7 @@ public class OtelDemo : ComponentResource
             Spec = new IngressSpecArgs {
                 IngressClassName = "webapprouting.kubernetes.azure.com",
                 Rules = new IngressRuleArgs {
+                    Host = "www.demo.onlyspans.com",
                     Http = new HTTPIngressRuleValueArgs {
                         Paths = new [] {
                             new HTTPIngressPathArgs {
@@ -73,7 +74,7 @@ public class OtelDemo : ComponentResource
                                 }
                             }
                         }
-                    } 
+                    }
                 }
             }
         }, new CustomResourceOptions {

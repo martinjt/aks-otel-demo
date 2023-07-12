@@ -5,6 +5,7 @@ using System.Text;
 using Azure.Core;
 using Pulumi;
 using Pulumi.AzureAD;
+using Pulumi.AzureNative.Authorization;
 using Pulumi.AzureNative.Compute;
 using Pulumi.AzureNative.ContainerService.V20230502Preview;
 using Pulumi.AzureNative.ContainerService.V20230502Preview.Inputs;
@@ -17,9 +18,14 @@ using ResourceIdentityType = Pulumi.AzureNative.ContainerService.V20230502Previe
 
 public class AKSCluster : ComponentResource
 {
+    private const string DnsZoneContributorRoleDefinitionId = "/providers/Microsoft.Authorization/roleDefinitions/befefa01-2a29-4197-83a8-272ff33ce314";
+
     public AKSCluster(string name, AKSClusterArgs? args, ComponentResourceOptions? options = null)
         : base("aks-otel-demo:aks:cluster", name, args, options)
     {
+        
+        var config = new Pulumi.Config();
+
         // Create an Azure Resource Group
         var resourceGroup = new ResourceGroup(name);
 
@@ -54,6 +60,7 @@ public class AKSCluster : ComponentResource
                         }
                     });
 
+        var dnsZoneId = config.RequireSecret("dns-zone-id");
         var cluster = new ManagedCluster(name, new ManagedClusterArgs
         {
             ResourceGroupName = resourceGroup.Name,
@@ -97,7 +104,7 @@ public class AKSCluster : ComponentResource
                 WebAppRouting = new ManagedClusterIngressProfileWebAppRoutingArgs
                 {
                     Enabled = true,
-
+                    DnsZoneResourceId = dnsZoneId
                 }
             },
             ServicePrincipalProfile = new ManagedClusterServicePrincipalProfileArgs
@@ -105,6 +112,14 @@ public class AKSCluster : ComponentResource
                 ClientId = adApp.ApplicationId,
                 Secret = adSpPassword.Value
             }
+        });
+
+        var roleAssignment = new RoleAssignment("cluster-dns-contributor", new()
+        {
+            PrincipalId = cluster.IngressProfile.Apply(ip => ip.WebAppRouting!.Identity.ObjectId!),
+            PrincipalType = PrincipalType.ServicePrincipal,
+            RoleDefinitionId = DnsZoneContributorRoleDefinitionId,
+            Scope = dnsZoneId,
         });
 
         // Export the KubeConfig
