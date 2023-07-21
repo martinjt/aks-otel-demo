@@ -1,6 +1,9 @@
 opentelemetry-collector:
+  presets:
+    kubernetesAttributes:
+      enabled: true
   image:
-    tag: "0.75.0"
+    tag: "0.81.0"
   config:
     receivers:
       otlp:
