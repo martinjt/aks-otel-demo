@@ -30,6 +30,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - uses: pulumi/actions@v4
+        id: pulumi_deploy
         with:
           command: up
           stack-name: ${{ env.PULUMI_STACK_NAME }}
@@ -49,3 +50,6 @@ jobs:
           PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_PASSPHRASE }}
           AZURE_STORAGE_ACCOUNT: ${{ env.PULUMI_STORAGE_ACCOUNT }}
           AZURE_KEYVAULT_AUTH_VIA_CLI: true
+
+      - name: Adding markdown
+        run: echo '${{ steps.pulumi_deploy.outputs }} 🚀' >> $GITHUB_STEP_SUMMARY
