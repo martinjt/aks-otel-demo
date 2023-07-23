@@ -37,6 +37,7 @@ jobs:
           cloud-url: azblob://${{ env.PULUMI_CONTAINER }}
           upsert: true
           diff: true
+          color: always
           config-map: |
             dns-zone-id: { value: ${{ secrets.DNS_ZONE_ID }} }
             honeycombKey: { value: ${{ secrets.HONEYCOMB_API_KEY }} }
