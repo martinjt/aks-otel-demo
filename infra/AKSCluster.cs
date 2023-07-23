@@ -25,9 +25,13 @@ public class AKSCluster : ComponentResource
     {
         
         var config = new Pulumi.Config();
+        var location = config.Get("location") ?? "uksouth";
 
         // Create an Azure Resource Group
-        var resourceGroup = new ResourceGroup(name);
+        var resourceGroup = new ResourceGroup(name, new ResourceGroupArgs
+        {
+            Location = location
+        });
 
         // Create an AD service principal
         var adApp = new Application(name, new ApplicationArgs
@@ -36,7 +40,7 @@ public class AKSCluster : ComponentResource
         });
         var adSp = new ServicePrincipal("aksSp", new ServicePrincipalArgs
         {
-            ApplicationId = adApp.ApplicationId
+            ApplicationId = adApp.ApplicationId,
         });
         var adSpPassword = new ServicePrincipalPassword("aksSpPassword", new ServicePrincipalPasswordArgs
         {
@@ -65,6 +69,7 @@ public class AKSCluster : ComponentResource
         {
             ResourceGroupName = resourceGroup.Name,
             AddonProfiles = addonProfiles,
+            Location = resourceGroup.Location,
             Identity = new ManagedClusterIdentityArgs
             {
                 Type = ResourceIdentityType.SystemAssigned
@@ -119,7 +124,7 @@ public class AKSCluster : ComponentResource
             PrincipalId = cluster.IngressProfile.Apply(ip => ip.WebAppRouting!.Identity.ObjectId!),
             PrincipalType = PrincipalType.ServicePrincipal,
             RoleDefinitionId = DnsZoneContributorRoleDefinitionId,
-            Scope = dnsZoneId,
+            Scope = dnsZoneId
         });
 
         // Export the KubeConfig
