@@ -36,6 +36,7 @@ jobs:
           work-dir: infra
           cloud-url: azblob://${{ env.PULUMI_CONTAINER }}
           upsert: true
+          diff: true
           config-map: |
             dns-zone-id: { value: ${{ secrets.DNS_ZONE_ID }} }
             honeycombKey: { value: ${{ secrets.HONEYCOMB_API_KEY }} }
