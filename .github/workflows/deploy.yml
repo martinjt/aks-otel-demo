@@ -36,6 +36,8 @@ jobs:
           work-dir: infra
           cloud-url: azblob://${{ env.PULUMI_CONTAINER }}
           upsert: true
+          config-map: |
+            dns-zone-id: { value: ${{ secrets.DNS_ZONE_ID }} }
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
