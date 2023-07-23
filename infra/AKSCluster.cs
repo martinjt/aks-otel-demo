@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Azure.Core;
 using Pulumi;
-using Pulumi.AzureAD;
 using Pulumi.AzureNative.Authorization;
 using Pulumi.AzureNative.Compute;
 using Pulumi.AzureNative.ContainerService.V20230502Preview;
@@ -20,7 +19,7 @@ public class AKSCluster : ComponentResource
 {
     private const string DnsZoneContributorRoleDefinitionId = "/providers/Microsoft.Authorization/roleDefinitions/befefa01-2a29-4197-83a8-272ff33ce314";
 
-    public AKSCluster(string name, AKSClusterArgs? args, ComponentResourceOptions? options = null)
+    public AKSCluster(string name, AKSClusterArgs args, ComponentResourceOptions? options = null)
         : base("aks-otel-demo:aks:cluster", name, args, options)
     {
         
@@ -101,7 +100,7 @@ public class AKSCluster : ComponentResource
 
         var roleAssignment = new RoleAssignment("cluster-dns-contributor", new()
         {
-            PrincipalId = cluster.IngressProfile.Apply(ip => ip.WebAppRouting!.Identity.ObjectId!),
+            PrincipalId = cluster.IngressProfile.Apply(ip => ip?.WebAppRouting!.Identity.ObjectId!),
             PrincipalType = PrincipalType.ServicePrincipal,
             RoleDefinitionId = DnsZoneContributorRoleDefinitionId,
             Scope = dnsZoneId
@@ -138,11 +137,8 @@ public class AKSCluster : ComponentResource
     [Output("kubeconfig")]
     public Output<string> KubeConfig { get; set; }
 
-    [Output("ingresscontroller")]
-    public Output<ImmutableDictionary<string, string>?> IngressController { get; set; }
-
     [Output("GatewayIp")]
-    public Output<string?> GatewayIp { get; set; }
+    public Output<string?> GatewayIp { get; set; } = null!;
 
     public K8s.Provider Provider { get; set; }
 
