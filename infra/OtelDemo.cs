@@ -78,7 +78,8 @@ public class OtelDemo : ComponentResource
                 }
             }
         }, new CustomResourceOptions {
-            DependsOn = new [] { release }
+            DependsOn = new [] { release },
+            Provider = args.Provider
         });
     }
 }
