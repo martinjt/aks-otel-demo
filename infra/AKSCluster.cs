@@ -33,21 +33,6 @@ public class AKSCluster : ComponentResource
             Location = location
         });
 
-        // // Create an AD service principal
-        // var adApp = new Application(name, new ApplicationArgs
-        // {
-        //     DisplayName = name
-        // });
-        // var adSp = new ServicePrincipal("aksSp", new ServicePrincipalArgs
-        // {
-        //     ApplicationId = adApp.ApplicationId,
-        // });
-        // var adSpPassword = new ServicePrincipalPassword("aksSpPassword", new ServicePrincipalPasswordArgs
-        // {
-        //     ServicePrincipalId = adSp.Id,
-        //     EndDate = "2099-01-01T00:00:00Z"
-        // });
-
         // Generate an SSH key
         var sshKey = new PrivateKey("ssh-key", new PrivateKeyArgs
         {
@@ -58,16 +43,17 @@ public class AKSCluster : ComponentResource
         var addonProfiles = new InputMap<ManagedClusterAddonProfileArgs>();
         if (args.CreateApplicationGateway)
             addonProfiles.Add("IngressApplicationGateway", new ManagedClusterAddonProfileArgs {
-                        Enabled = true,
-                        Config = {
-                            ["subnetCIDR"] = "10.225.0.0/16"
-                        }
-                    });
+                Enabled = true,
+                Config = {
+                    ["subnetCIDR"] = "10.225.0.0/16"
+                }
+            });
 
         var dnsZoneId = config.RequireSecret("dns-zone-id");
         var cluster = new ManagedCluster(name, new ManagedClusterArgs
         {
             ResourceGroupName = resourceGroup.Name,
+            NodeResourceGroup = resourceGroup.Name,
             AddonProfiles = addonProfiles,
             Location = resourceGroup.Location,
             Identity = new ManagedClusterIdentityArgs
@@ -111,12 +97,7 @@ public class AKSCluster : ComponentResource
                     Enabled = true,
                     DnsZoneResourceId = dnsZoneId
                 }
-            },
-            // ServicePrincipalProfile = new ManagedClusterServicePrincipalProfileArgs
-            // {
-            //     ClientId = adApp.ApplicationId,
-            //     Secret = adSpPassword.Value
-            // }
+            }
         });
 
         var roleAssignment = new RoleAssignment("cluster-dns-contributor", new()
