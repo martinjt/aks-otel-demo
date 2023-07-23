@@ -52,4 +52,4 @@ jobs:
           AZURE_KEYVAULT_AUTH_VIA_CLI: true
 
       - name: Adding markdown
-        run: echo '${{ steps.pulumi_deploy.outputs }} 🚀' >> $GITHUB_STEP_SUMMARY
+        run: echo '${{ toJson(steps.pulumi_deploy.outputs) }} 🚀' >> $GITHUB_STEP_SUMMARY
