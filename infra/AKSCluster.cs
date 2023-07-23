@@ -32,10 +32,6 @@ public class AKSCluster : ComponentResource
         {
             Location = location
         });
-        var nodesResourceGroup = new ResourceGroup($"{name}-nodes", new ResourceGroupArgs
-        {
-            Location = location
-        });
         // Generate an SSH key
         var sshKey = new PrivateKey("ssh-key", new PrivateKeyArgs
         {
@@ -56,7 +52,7 @@ public class AKSCluster : ComponentResource
         var cluster = new ManagedCluster(name, new ManagedClusterArgs
         {
             ResourceGroupName = resourceGroup.Name,
-            NodeResourceGroup = nodesResourceGroup.Name,
+            NodeResourceGroup = resourceGroup.Name.Apply(rg => $"{rg}-nodes"),
             AddonProfiles = addonProfiles,
             Location = resourceGroup.Location,
             Identity = new ManagedClusterIdentityArgs
