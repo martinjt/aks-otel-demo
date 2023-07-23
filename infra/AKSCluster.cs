@@ -33,20 +33,20 @@ public class AKSCluster : ComponentResource
             Location = location
         });
 
-        // Create an AD service principal
-        var adApp = new Application(name, new ApplicationArgs
-        {
-            DisplayName = name
-        });
-        var adSp = new ServicePrincipal("aksSp", new ServicePrincipalArgs
-        {
-            ApplicationId = adApp.ApplicationId,
-        });
-        var adSpPassword = new ServicePrincipalPassword("aksSpPassword", new ServicePrincipalPasswordArgs
-        {
-            ServicePrincipalId = adSp.Id,
-            EndDate = "2099-01-01T00:00:00Z"
-        });
+        // // Create an AD service principal
+        // var adApp = new Application(name, new ApplicationArgs
+        // {
+        //     DisplayName = name
+        // });
+        // var adSp = new ServicePrincipal("aksSp", new ServicePrincipalArgs
+        // {
+        //     ApplicationId = adApp.ApplicationId,
+        // });
+        // var adSpPassword = new ServicePrincipalPassword("aksSpPassword", new ServicePrincipalPasswordArgs
+        // {
+        //     ServicePrincipalId = adSp.Id,
+        //     EndDate = "2099-01-01T00:00:00Z"
+        // });
 
         // Generate an SSH key
         var sshKey = new PrivateKey("ssh-key", new PrivateKeyArgs
@@ -112,11 +112,11 @@ public class AKSCluster : ComponentResource
                     DnsZoneResourceId = dnsZoneId
                 }
             },
-            ServicePrincipalProfile = new ManagedClusterServicePrincipalProfileArgs
-            {
-                ClientId = adApp.ApplicationId,
-                Secret = adSpPassword.Value
-            }
+            // ServicePrincipalProfile = new ManagedClusterServicePrincipalProfileArgs
+            // {
+            //     ClientId = adApp.ApplicationId,
+            //     Secret = adSpPassword.Value
+            // }
         });
 
         var roleAssignment = new RoleAssignment("cluster-dns-contributor", new()
