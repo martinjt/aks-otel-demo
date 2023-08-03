@@ -1,3 +1,4 @@
 {
-    "dotnet.defaultSolution": "aks-otel-demo.sln"
+    "dotnet.defaultSolution": "aks-otel-demo.sln",
+    "yaml.schemaStore.enable": false
 }
