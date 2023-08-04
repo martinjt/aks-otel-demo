@@ -1,0 +1,69 @@
+RulesVersion: 2
+
+Samplers:
+  __default__:
+    DeterministicSampler:
+      SampleRate: 5
+
+  # The value here is the name of the honeycomb environment, it's special and needs to match
+  # with the name of the environment that your honeycomb api key is associated with.
+  refinery-test:
+    RulesBasedSampler:
+      Rules:
+        - Name: Keep 500 status codes
+          SampleRate: 1
+          Conditions:
+            - Field: http.status_code
+              Operator: '>='
+              Value: 500
+              Datatype: int
+        - Name: Keep Type 2 GRPC Status Codes
+          SampleRate: 1
+          Conditions:
+            - Field: rpc.grpc.status_code
+              Operator: ">="
+              Value: 2
+              Datatype: int
+        - Name: Keep where error field exists
+          SampleRate: 1
+          Conditions:
+            - Field: error
+              Operator: exists
+        - Name: Keep long duration traces
+          SampleRate: 1
+          Scope: span
+          Conditions:
+            - Field: trace.parent_id
+              Operator: not-exists
+            - Field: duration_ms
+              Operator: ">="
+              Value: 1700
+              Datatype: int
+        - Name: Dynamically Sample 200s through 400s
+          Conditions:
+            - Field: trace.parent_id
+              Operator: not-exists
+            - Field: http.status_code
+              Operator: ">="
+              Value: 200
+              Datatype: int
+            - Field: http.status_code
+              Operator: "<"
+              Value: 400
+              Datatype: int
+          Sampler:
+            EMADynamicSampler:
+              GoalSampleRate: 5              # This is a sample rate itself
+              FieldList:
+                - service.name
+                - http.target
+                - http.status_code
+                - http.method
+        - Name: Catchall rule
+          Sampler:
+            EMAThroughputSampler:
+              GoalThroughputPerSec: 25      # This is spans per second per refinery node (otel demo does about 50-60 spans per second without sampling)
+              FieldList:
+                - service.name
+                - http.status_code
+                - status_code`

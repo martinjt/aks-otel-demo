@@ -1,0 +1,6 @@
+encryptionsalt: v1:hJUpLkGGlwE=:v1:NZh1ChU5q9v6jUl+:OF5vqpB2KzaH17sXus1Gn1xr+6S6xA==
+config:
+  aks-otel-demo:dns-zone-id:
+    secure: v1:vh3kSHb9pqm19nti:UJmxVX3BmXLZpQJLbpuUUMDUEQcw8r3tyt2wjfnwfMvZ7YYl6xl5oSquJ2945x5vPGOa0Lqzao6gazL3Th8QI+tBCAzHiEBtnKBo3iH5MMF1oSbWXquw6j7el8ZplcDG3QLO8trH7XxT8avj754UG6ng6Xf8QdFy2e3dFGPRvdXA1Ajh+I0xwNL4GBcwv+zNySDMCQ==
+  aks-otel-demo:honeycombKey:
+    secure: v1:7XDLv6xPllZ3DHqp:PbV3H89bZyKJYOPK0LcKePb8hwawSPrGGwk5+mVAUSRjk5NhRr8=

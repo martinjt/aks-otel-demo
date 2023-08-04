@@ -1,0 +1,27 @@
+config:
+  RefineryTelemetry:
+    AddRuleReasonToTrace: true
+  StressRelief:
+    ActivationLevel: 85
+    DeactivationLevel: 50
+    Mode: monitor
+  Traces:
+    SendDelay: 10s
+    TraceTimeout: 60s
+
+environment:
+  - name: POD_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.name
+  - name: OTEL_RESOURCE_ATTRIBUTES
+    value: "refinery.hostname=$(POD_NAME)"
+
+replicaCount: 1
+resources:
+  limits:
+    cpu: 500m
+    memory: 2Gi
+  requests:
+    cpu: 500m
+    memory: 2Gi
