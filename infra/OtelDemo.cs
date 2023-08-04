@@ -82,7 +82,7 @@ public class OtelDemo : ComponentResource
                         },
                     },
                     ["config"] = new Dictionary<string, object> {
-                        ["exporter"] =  new Dictionary<string, object> {
+                        ["exporters"] =  new Dictionary<string, object> {
                             ["otlp/honeycomb"] = new Dictionary<string, object> {
                                 ["endpoint"] = refinery.Name.Apply(n => $"http://{n}-refinery:4317"),
                                 ["headers"] = new Dictionary<string, object> {
