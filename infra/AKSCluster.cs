@@ -58,19 +58,6 @@ public class AKSCluster : ComponentResource
             {
                 Type = ResourceIdentityType.SystemAssigned
             },
-            AgentPoolProfiles =
-            {
-                new ManagedClusterAgentPoolProfileArgs
-                {
-                    Count = 2,
-                    MaxPods = 110,
-                    Mode = AgentPoolMode.System,
-                    Name = "agentpool",
-                    OsType = OSType.Linux,
-                    Type = AgentPoolType.VirtualMachineScaleSets,
-                    VmSize = VirtualMachineSizeTypes.Standard_D2s_v3.ToString()
-                }
-            },
             DnsPrefix = "otel-demo",
             EnableRBAC = true,
             KubernetesVersion = "1.27.1",
@@ -96,6 +83,18 @@ public class AKSCluster : ComponentResource
                     DnsZoneResourceId = dnsZoneId
                 }
             }
+        });
+
+        var agentPool = new AgentPool("agents", new AgentPoolArgs {
+            ResourceGroupName = resourceGroup.Name,
+            Count = 2,
+            MaxPods = 110,
+            Mode = AgentPoolMode.System,
+            AgentPoolName = "aksagentpool",
+            OsType = OSType.Linux,
+            Type = AgentPoolType.VirtualMachineScaleSets,
+            VmSize = VirtualMachineSizeTypes.Standard_D4_v3.ToString(),
+            ResourceName = cluster.Name,
         });
 
         var roleAssignment = new RoleAssignment("cluster-dns-contributor", new()
