@@ -34,15 +34,15 @@ public class OtelDemo : ComponentResource
             }
         });
 
-        var otelDemoRelease = new Release("otel-demo", new ReleaseArgs {
-            Chart = "opentelemetry-demo",
-            Name = "otel-demo",
-            Namespace = otelDemoNamespace.Metadata.Apply(m => m.Name),
-            RepositoryOpts = new RepositoryOptsArgs {
-                Repo = "https://open-telemetry.github.io/opentelemetry-helm-charts"
-            },
-            ValueYamlFiles = new FileAsset("./config-files/collector/values.yaml"),
-            Values = new Dictionary<string, object> {
+        var servicesToSetAffinityOn = new HashSet<string> {
+            "accountingService",
+            "shippingService"
+        };
+
+        var values =new Dictionary<string, object> {
+                ["default"] = new Dictionary<string, object> {
+                    ["replicas"] = 2
+                },
                 ["opentelemetry-collector"] = new Dictionary<string, object> {
                     ["extraEnvs"] = new [] {
                         new Dictionary<string, object> {
@@ -68,8 +68,22 @@ public class OtelDemo : ComponentResource
                             }
                         }
                     }
-                }
-            }
+                },
+                ["components"] = new Dictionary<string, object>()
+            };
+        foreach (var serviceName in servicesToSetAffinityOn)
+            ((Dictionary<string, object>)values["components"])
+                .Add(serviceName,new Dictionary<string, object> {
+                    ["schedulingRules"] = GenerateSchedulingRules("otel-demo", serviceName)
+                });
+
+        var otelDemoRelease = new Release("otel-demo", new ReleaseArgs {
+            Chart = "../opentelemetry-helm-charts/charts/opentelemetry-demo",
+            Name = "otel-demo",
+            Namespace = otelDemoNamespace.Metadata.Apply(m => m.Name),
+            DependencyUpdate = true,
+            ValueYamlFiles = new FileAsset("./config-files/collector/values.yaml"),
+            Values = values
         });
 
         var ingress = new Ingress("otel-demo-frontend", new IngressArgs {
@@ -101,7 +115,52 @@ public class OtelDemo : ComponentResource
         }, new CustomResourceOptions {
             DependsOn = new [] { otelDemoRelease },
         });
+
+        this.Namespace = otelDemoNamespace.Metadata.Apply(m => m.Name);
     }
+
+    private Dictionary<string, object> GenerateSchedulingRules(string releaseName, string name) => 
+        new () {
+            ["affinity"] = new Dictionary<string, object> {
+                ["podAntiAffinity"] = new Dictionary<string, object> {
+                    ["preferredDuringSchedulingIgnoredDuringExecution"] = new [] {
+                        new Dictionary<string, object> {
+                            ["podAffinityTerm"] = new Dictionary<string, object> {
+                                ["labelSelector"] = new Dictionary<string, object> {
+                                    ["matchExpressions"] = new [] {
+                                        new Dictionary<string, object> {
+                                            ["key"] = "app.kubernetes.io/component",
+                                            ["operator"] = "In",
+                                            ["values"] = new [] {
+                                                name
+                                            }
+                                        }
+                                    }
+                                },
+                                ["topologyKey"] = "kubernetes.io/hostname"
+
+                            },
+                            ["weight"] = 100
+                        }
+                    }
+                }
+            }
+        };
+
+// default:
+//   schedulingRules:
+//     affinity:
+//       nodeAffinity:
+//         requiredDuringSchedulingIgnoredDuringExecution:
+//           nodeSelectorTerms:
+//             - matchExpressions:
+//                 - key: name
+//                   operator: In
+//                   values:
+//                     - '{{ include "otel-demo.name" . }}-{{ .name }}'
+//                   topologyKey: kubernetes.io/hostname
+
+    public Output<string> Namespace { get; set; } = null!;
 }
 
 public class OtelDemoArgs

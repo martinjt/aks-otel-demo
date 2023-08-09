@@ -1,3 +1,6 @@
+default:
+  replicas: 2
+
 opentelemetry-collector:
   presets:
     kubernetesAttributes:
