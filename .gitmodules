@@ -1,0 +1,3 @@
+[submodule "opentelemetry-helm-charts"]
+	path = opentelemetry-helm-charts
+	url = https://github.com/martinjt/opentelemetry-helm-charts

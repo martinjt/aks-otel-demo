@@ -13,6 +13,10 @@ return await Pulumi.Deployment.RunAsync(() =>
         RefineryName = refinery.RefineryServiceName
     }, new ComponentResourceOptions { Provider = cluster.Provider });
 
+    var chaosMesh = new ChaosMesh("chaos-mesh", new ChaosMeshArgs {
+        OtelDemoNamespace = otelDemo.Namespace
+    }, new ComponentResourceOptions { Provider = cluster.Provider });
+
     return new Dictionary<string, object?>
     {
         ["clusterName"] = cluster.ClusterName,
