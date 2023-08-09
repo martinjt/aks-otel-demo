@@ -1,0 +1,11 @@
+dashboard:
+  ingress:
+    ## Set to true to enable ingress record generation
+    enabled: true
+    hosts:
+      - name: chaos.demo.onlyspans.com
+
+    apiVersionOverrides: ""
+
+    # Defines which ingress controller will implement the resource
+    ingressClassName: "webapprouting.kubernetes.azure.com"
