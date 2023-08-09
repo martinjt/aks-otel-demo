@@ -83,7 +83,7 @@ public class AKSCluster : ComponentResource
                     DnsZoneResourceId = dnsZoneId
                 }
             }
-        });
+        }, new CustomResourceOptions { IgnoreChanges = { "agentPoolProfiles" } });
 
         var agentPool = new AgentPool("agents", new AgentPoolArgs {
             ResourceGroupName = resourceGroup.Name,
