@@ -84,6 +84,9 @@ public class OtelDemo : ComponentResource
             DependencyUpdate = true,
             ValueYamlFiles = new FileAsset("./config-files/collector/values.yaml"),
             Values = values
+        }, new CustomResourceOptions
+        {
+            IgnoreChanges = { "resourceNames" }
         });
 
         var ingress = new Ingress("otel-demo-frontend", new IngressArgs {
