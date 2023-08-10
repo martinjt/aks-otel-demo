@@ -2,15 +2,19 @@
 using Pulumi;
 using infra.Applications;
 
-return await Pulumi.Deployment.RunAsync(() =>
+return await Deployment.RunAsync(() =>
 {
     var cluster = new AKSCluster("aks-otel-demo", new AKSClusterArgs());
     
     var refinery = new Refinery("refinery", new RefineryArgs(), 
         new ComponentResourceOptions { Provider = cluster.Provider });
 
-    var otelDemo = new OtelDemo("otel-demo", new OtelDemoArgs{
+    var otelCollector = new OtelCollector("otel-collector", new OtelCollectorArgs{
         RefineryName = refinery.RefineryServiceName
+    }, new ComponentResourceOptions { Provider = cluster.Provider });
+
+    var otelDemo = new OtelDemo("otel-demo", new OtelDemoArgs {
+        CollectorName = otelCollector.CollectorName
     }, new ComponentResourceOptions { Provider = cluster.Provider });
 
     var chaosMesh = new ChaosMesh("chaos-mesh", new ChaosMeshArgs {

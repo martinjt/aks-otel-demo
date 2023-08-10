@@ -15,8 +15,6 @@ public class OtelDemo : ComponentResource
     public OtelDemo(string name, OtelDemoArgs args, ComponentResourceOptions? options = null)
         : base(name, "aks-otel-demo:chart:otel-demo", options)
     {
-        var config = new Config();
-        var apiKey = config.RequireSecret("honeycombKey");
 
         var otelDemoNamespace = new Namespace("otel-demo", new NamespaceArgs {
             Metadata = new ObjectMetaArgs {
@@ -24,16 +22,6 @@ public class OtelDemo : ComponentResource
             }
         });
         
-        var secretApiKey = new Secret("honeycomb-api-key-otel-demo", new SecretArgs
-        {
-            Metadata = new ObjectMetaArgs {
-                Namespace = otelDemoNamespace.Metadata.Apply(m => m.Name)
-            },
-            StringData = {
-                ["honeycomb-api-key"] = apiKey
-            }
-        });
-
         var servicesToSetAffinityOn = new HashSet<string> {
             "accountingService",
             "shippingService"
@@ -41,31 +29,11 @@ public class OtelDemo : ComponentResource
 
         var values =new Dictionary<string, object> {
                 ["default"] = new Dictionary<string, object> {
-                    ["replicas"] = 2
-                },
-                ["opentelemetry-collector"] = new Dictionary<string, object> {
-                    ["extraEnvs"] = new [] {
+                    ["replicas"] = 2,
+                    ["envOverrides"] = new [] {
                         new Dictionary<string, object> {
-                            ["name"] = "HONEYCOMB_API_KEY",
-                            ["valueFrom"] = new Dictionary<string, object> {
-                                ["secretKeyRef"] = new Dictionary<string, object> {
-                                    ["name"] = secretApiKey.Id.Apply(a => a.Split("/")[1]),
-                                    ["key"] = "honeycomb-api-key"
-                                }
-                            }
-                        },
-                    },
-                    ["config"] = new Dictionary<string, object> {
-                        ["exporters"] =  new Dictionary<string, object> {
-                            ["otlp/honeycomb"] = new Dictionary<string, object> {
-                                ["endpoint"] = Output.Format($"http://{args.RefineryName}:4317"),
-                                ["headers"] = new Dictionary<string, object> {
-                                    ["x-honeycomb-team"] = apiKey
-                                },
-                                ["tls"] = new Dictionary<string, object> {
-                                    ["insecure"] = true
-                                }
-                            }
+                            ["name"] = "OTEL_COLLECTOR_NAME",
+                            ["value"] = args.CollectorName
                         }
                     }
                 },
@@ -80,9 +48,9 @@ public class OtelDemo : ComponentResource
         var otelDemoRelease = new Release("otel-demo", new ReleaseArgs {
             Chart = "../opentelemetry-helm-charts/charts/opentelemetry-demo",
             Name = "otel-demo",
+            Version = "0.1.0",
             Namespace = otelDemoNamespace.Metadata.Apply(m => m.Name),
             DependencyUpdate = true,
-            ValueYamlFiles = new FileAsset("./config-files/collector/values.yaml"),
             Values = values
         }, new CustomResourceOptions
         {
@@ -119,10 +87,10 @@ public class OtelDemo : ComponentResource
             DependsOn = new [] { otelDemoRelease },
         });
 
-        this.Namespace = otelDemoNamespace.Metadata.Apply(m => m.Name);
+        Namespace = otelDemoNamespace.Metadata.Apply(m => m.Name);
     }
 
-    private Dictionary<string, object> GenerateSchedulingRules(string releaseName, string name) => 
+    private static Dictionary<string, object> GenerateSchedulingRules(string releaseName, string name) => 
         new () {
             ["affinity"] = new Dictionary<string, object> {
                 ["podAntiAffinity"] = new Dictionary<string, object> {
@@ -150,23 +118,10 @@ public class OtelDemo : ComponentResource
             }
         };
 
-// default:
-//   schedulingRules:
-//     affinity:
-//       nodeAffinity:
-//         requiredDuringSchedulingIgnoredDuringExecution:
-//           nodeSelectorTerms:
-//             - matchExpressions:
-//                 - key: name
-//                   operator: In
-//                   values:
-//                     - '{{ include "otel-demo.name" . }}-{{ .name }}'
-//                   topologyKey: kubernetes.io/hostname
-
     public Output<string> Namespace { get; set; } = null!;
 }
 
 public class OtelDemoArgs
 {
-    public Input<string> RefineryName { get; set; } = null!;
+    public Input<string> CollectorName { get; set; } = null!;
 }
