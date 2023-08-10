@@ -7,7 +7,7 @@ Samplers:
 
   # The value here is the name of the honeycomb environment, it's special and needs to match
   # with the name of the environment that your honeycomb api key is associated with.
-  refinery-test:
+  aks-demo:
     RulesBasedSampler:
       Rules:
         - Name: Keep 500 status codes
