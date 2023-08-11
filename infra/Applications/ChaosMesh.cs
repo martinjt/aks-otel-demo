@@ -34,6 +34,7 @@ public class ChaosMesh : ComponentResource
         });
 
         CreateViewRole(args);
+        CreateManagerRole(args);
     }
 
     private static void CreateViewRole(ChaosMeshArgs args)
@@ -87,7 +88,60 @@ public class ChaosMesh : ComponentResource
             }
         });
     }
+    private static void CreateManagerRole(ChaosMeshArgs args)
+    {
+        var managerServiceAccount = new ServiceAccount("manager", new ServiceAccountArgs
+        {
+            Metadata = new ObjectMetaArgs
+            {
+                Namespace = args.OtelDemoNamespace
+            }
+        });
+
+        var managerRole = new Role("manager", new RoleArgs
+        {
+            Metadata = new ObjectMetaArgs
+            {
+                Namespace = args.OtelDemoNamespace
+            },
+            Rules = {
+                new PolicyRuleArgs {
+                    ApiGroups = { "" },
+                    Resources = { "pods", "namespaces" },
+                    Verbs = { "get", "list", "watch" },
+                },
+                new PolicyRuleArgs {
+                    ApiGroups = { "chaos-mesh.org" },
+                    Resources = { "*" },
+                    Verbs = { "get", "list", "watch", "create", "delete", "patch", "update" },
+                }
+            }
+        });
+
+        var managerRoleBinding = new RoleBinding("manager", new RoleBindingArgs
+        {
+            Metadata = new ObjectMetaArgs
+            {
+                Namespace = args.OtelDemoNamespace
+            },
+            RoleRef = new RoleRefArgs
+            {
+                ApiGroup = "rbac.authorization.k8s.io",
+                Kind = managerRole.Kind,
+                Name = managerRole.Metadata.Apply(m => m.Name)
+            },
+            Subjects = {
+                new SubjectArgs {
+                    Kind = managerServiceAccount.Kind,
+                    Name = managerServiceAccount.Metadata.Apply(m => m.Name),
+                    Namespace = managerServiceAccount.Metadata.Apply(m => m.Namespace)
+                }
+            }
+        });
+    }
 }
+
+
 
 public class ChaosMeshArgs : ResourceArgs
 {
