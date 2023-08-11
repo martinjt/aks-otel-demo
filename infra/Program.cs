@@ -25,7 +25,7 @@ return await Deployment.RunAsync(() =>
     {
         ["clusterName"] = cluster.ClusterName,
         ["clusterResourceGroup"] = cluster.ClusterResourceGroup,
-        ["ChaosMesh:ViewerRole"] = chaosMesh.ViewerRole,
-        ["ChaosMesh:ManagerRole"] = chaosMesh.ManagerRole
+        ["chaosMeshViewerRole"] = chaosMesh.ViewerRole,
+        ["chaosMeshManagerRole"] = chaosMesh.ManagerRole
     };
 });
