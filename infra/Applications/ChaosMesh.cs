@@ -33,11 +33,11 @@ public class ChaosMesh : ComponentResource
             ValueYamlFiles = new FileAsset("./config-files/chaos-mesh/values.yaml"),
         });
 
-        CreateViewRole(args);
-        CreateManagerRole(args);
+        ViewerRole = CreateViewRole(args);
+        ManagerRole = CreateManagerRole(args);
     }
 
-    private static void CreateViewRole(ChaosMeshArgs args)
+    private static Output<string> CreateViewRole(ChaosMeshArgs args)
     {
         var viewerServiceAccount = new ServiceAccount("viewer", new ServiceAccountArgs
         {
@@ -87,8 +87,10 @@ public class ChaosMesh : ComponentResource
                 }
             }
         });
+
+        return viewerServiceAccount.Metadata.Apply(m => m.Name);
     }
-    private static void CreateManagerRole(ChaosMeshArgs args)
+    private static Output<string> CreateManagerRole(ChaosMeshArgs args)
     {
         var managerServiceAccount = new ServiceAccount("manager", new ServiceAccountArgs
         {
@@ -138,9 +140,15 @@ public class ChaosMesh : ComponentResource
                 }
             }
         });
+        return managerServiceAccount.Metadata.Apply(m => m.Name);
     }
-}
 
+    [Output("ChaosMesh-ViewerRole")]
+    public Output<string> ViewerRole { get; set; } = null!;
+
+    [Output("ChaosMesh-ManagerRole")]
+    public Output<string> ManagerRole { get; set; } = null!;
+}
 
 
 public class ChaosMeshArgs : ResourceArgs

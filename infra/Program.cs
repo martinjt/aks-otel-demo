@@ -24,6 +24,8 @@ return await Deployment.RunAsync(() =>
     return new Dictionary<string, object?>
     {
         ["clusterName"] = cluster.ClusterName,
-        ["clusterResourceGroup"] = cluster.ClusterResourceGroup
+        ["clusterResourceGroup"] = cluster.ClusterResourceGroup,
+        ["ChaosMesh:ViewerRole"] = chaosMesh.ViewerRole,
+        ["ChaosMesh:ManagerRole"] = chaosMesh.ManagerRole
     };
 });
