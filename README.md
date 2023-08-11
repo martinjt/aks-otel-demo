@@ -25,3 +25,13 @@ Add the DNS zone config
 ```shell
 pulumi config set --secret dns-zone-id <resourceId for the DNS zone>
 ```
+
+## Troubleshooting
+
+### Deploy a shell
+
+There is a busybox shell that can be deployed so you can do things inside the cluster. This will give you a pod that you can shell into.
+
+```shell
+kubectl apply -f utils/shell.yaml
+```
