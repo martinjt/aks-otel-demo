@@ -20,7 +20,7 @@ public class OtelDemo : ComponentResource
             Metadata = new ObjectMetaArgs {
                 Name = "otel-demo"
             }
-        });
+        }, new CustomResourceOptions { Provider = options?.Provider!});
         
         var servicesToSetAffinityOn = new HashSet<string> {
             "accountingService",
@@ -54,7 +54,8 @@ public class OtelDemo : ComponentResource
             Values = values
         }, new CustomResourceOptions
         {
-            IgnoreChanges = { "resourceNames" }
+            IgnoreChanges = { "resourceNames" },
+            Provider = options?.Provider!
         });
 
         var ingress = new Ingress("otel-demo-frontend", new IngressArgs {
@@ -85,6 +86,7 @@ public class OtelDemo : ComponentResource
             }
         }, new CustomResourceOptions {
             DependsOn = new [] { otelDemoRelease },
+            Provider = options?.Provider!
         });
 
         Namespace = otelDemoNamespace.Metadata.Apply(m => m.Name);

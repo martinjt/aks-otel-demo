@@ -20,7 +20,7 @@ public class OtelCollector : ComponentResource
             Metadata = new ObjectMetaArgs {
                 Name = "otel-collector"
             }
-        });
+        }, new CustomResourceOptions { Provider = options?.Provider!});
         
         var secretApiKey = new Secret("honeycomb-api-key-otel-collector", new SecretArgs
         {
@@ -30,7 +30,7 @@ public class OtelCollector : ComponentResource
             StringData = {
                 ["honeycomb-api-key"] = apiKey
             }
-        });
+        }, new CustomResourceOptions { Provider = options?.Provider!});
 
 
         var values =new Dictionary<string, object> {
@@ -64,7 +64,8 @@ public class OtelCollector : ComponentResource
             Values = values
         }, new CustomResourceOptions
         {
-            IgnoreChanges = { "resourceNames" }
+            IgnoreChanges = { "resourceNames" },
+            Provider = options?.Provider!
         });
 
         this.CollectorName = Output.Format($"{otelCollectorRelease.Namespace}.{otelCollectorRelease.Name}");

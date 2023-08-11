@@ -20,7 +20,7 @@ public class ChaosMesh : ComponentResource
             {
                 Name = "chaos-mesh"
             }
-        });
+        }, new CustomResourceOptions { Provider = options?.Provider!});
         var otelDemoRelease = new Release("chaos-mesh", new ReleaseArgs
         {
             Chart = "chaos-mesh",
@@ -31,13 +31,13 @@ public class ChaosMesh : ComponentResource
                 Repo = "https://charts.chaos-mesh.org"
             },
             ValueYamlFiles = new FileAsset("./config-files/chaos-mesh/values.yaml"),
-        });
+        }, new CustomResourceOptions { Provider = options?.Provider!});
 
-        ViewerRole = CreateViewRole(args);
-        ManagerRole = CreateManagerRole(args);
+        ViewerRole = CreateViewRole(args, options);
+        ManagerRole = CreateManagerRole(args, options);
     }
 
-    private static Output<string> CreateViewRole(ChaosMeshArgs args)
+    private static Output<string> CreateViewRole(ChaosMeshArgs args, ComponentResourceOptions? options)
     {
         var viewerServiceAccount = new ServiceAccount("viewer", new ServiceAccountArgs
         {
@@ -45,7 +45,7 @@ public class ChaosMesh : ComponentResource
             {
                 Namespace = args.OtelDemoNamespace
             }
-        });
+        }, new CustomResourceOptions { Provider = options?.Provider!});
 
         var viewerRole = new Role("viewer", new RoleArgs
         {
@@ -65,7 +65,7 @@ public class ChaosMesh : ComponentResource
                     Verbs = { "get", "list", "watch" },
                 }
             }
-        });
+        }, new CustomResourceOptions { Provider = options?.Provider!});
 
         var viewerRoleBinding = new RoleBinding("viewer", new RoleBindingArgs
         {
@@ -86,11 +86,11 @@ public class ChaosMesh : ComponentResource
                     Namespace = viewerServiceAccount.Metadata.Apply(m => m.Namespace)
                 }
             }
-        });
+        }, new CustomResourceOptions { Provider = options?.Provider!});
 
         return viewerServiceAccount.Metadata.Apply(m => m.Name);
     }
-    private static Output<string> CreateManagerRole(ChaosMeshArgs args)
+    private static Output<string> CreateManagerRole(ChaosMeshArgs args, ComponentResourceOptions? options)
     {
         var managerServiceAccount = new ServiceAccount("manager", new ServiceAccountArgs
         {
@@ -98,7 +98,7 @@ public class ChaosMesh : ComponentResource
             {
                 Namespace = args.OtelDemoNamespace
             }
-        });
+        }, new CustomResourceOptions { Provider = options?.Provider!});
 
         var managerRole = new Role("manager", new RoleArgs
         {
@@ -118,7 +118,7 @@ public class ChaosMesh : ComponentResource
                     Verbs = { "get", "list", "watch", "create", "delete", "patch", "update" },
                 }
             }
-        });
+        }, new CustomResourceOptions { Provider = options?.Provider!});
 
         var managerRoleBinding = new RoleBinding("manager", new RoleBindingArgs
         {
@@ -139,7 +139,7 @@ public class ChaosMesh : ComponentResource
                     Namespace = managerServiceAccount.Metadata.Apply(m => m.Namespace)
                 }
             }
-        });
+        }, new CustomResourceOptions { Provider = options?.Provider!});
         return managerServiceAccount.Metadata.Apply(m => m.Name);
     }
 
@@ -153,5 +153,5 @@ public class ChaosMesh : ComponentResource
 
 public class ChaosMeshArgs : ResourceArgs
 {
-    public Input<string> OtelDemoNamespace { get; set; }
+    public Input<string> OtelDemoNamespace { get; set; } = null!;
 }

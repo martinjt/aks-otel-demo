@@ -22,7 +22,7 @@ public class Refinery : ComponentResource
             Metadata = new ObjectMetaArgs {
                 Name = "refinery"
             }
-        });
+        }, new CustomResourceOptions { Provider = options?.Provider!});
 
         var secretApiKey = new Secret("honeycomb-api-key-refinery", new SecretArgs
         {
@@ -32,7 +32,7 @@ public class Refinery : ComponentResource
             StringData = {
                 ["honeycomb-api-key"] = apiKey
             }
-        });
+        }, new CustomResourceOptions { Provider = options?.Provider!});
 
         var refineryRulesConfigMap = new ConfigMap("refinery-rules", new ConfigMapArgs {
             Metadata = new ObjectMetaArgs {
@@ -41,7 +41,7 @@ public class Refinery : ComponentResource
             },
             Data = {
                 ["rules.yaml"] = File.ReadAllText("./config-files/refinery/rules.yaml")
-        }});
+        }}, new CustomResourceOptions { Provider = options?.Provider!});
 
         var refinery = new Release("refinery", new ReleaseArgs {
             Chart = "refinery",
@@ -65,7 +65,7 @@ public class Refinery : ComponentResource
                 },
                 ["RulesConfigMapName"] = refineryRulesConfigMap.Metadata.Apply(m => m.Name)
             }
-        });
+        }, new CustomResourceOptions { Provider = options?.Provider!});
 
         RefineryServiceName = Output.Format($"{refinery.Namespace}.{refinery.Name}");
     }
