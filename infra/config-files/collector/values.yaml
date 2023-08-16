@@ -38,16 +38,30 @@ config:
           - 'name == "queueSize"'
 
   exporters:
-    otlp/refinery:
+    otlp:
       endpoint: ${REFINERY_ADDRESS}:4317
       headers:
         x-honeycomb-team: ${HONEYCOMB_API_KEY}
       tls:
         insecure: true
 
+    otlp/metrics:
+      endpoint: api.honeycomb.io:443
+      headers:
+        x-honeycomb-team: ${HONEYCOMB_API_KEY}
+        x-honeycomb-dataset: service-metrics
+
+    otlp/logging:
+      endpoint: api.honeycomb.io:443
+      headers:
+        x-honeycomb-team: ${HONEYCOMB_API_KEY}
+        x-honeycomb-dataset: service-logs
+
   service:
     pipelines:
+      metrics: 
+        exporters: [otlp/metrics]
+      logs: 
+        exporters: [otlp/logging]
       traces:
-        receivers: [otlp]
-        processors: [memory_limiter, batch]
-        exporters: [otlp/refinery, logging]
+        exporters: [otlp]
