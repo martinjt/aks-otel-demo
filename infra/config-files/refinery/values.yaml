@@ -8,6 +8,8 @@ config:
   Traces:
     SendDelay: 10s
     TraceTimeout: 60s
+  OTelMetrics:
+    Enabled: true
 
 environment:
   - name: POD_NAME
