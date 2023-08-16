@@ -9,9 +9,6 @@ presets:
     enabled: true
   kubernetesAttributes:
     enabled: true
-service:
-  type: ClusterIP
-  enabled: true
 image:
   tag: "0.81.0"
 config:

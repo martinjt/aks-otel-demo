@@ -33,7 +33,11 @@ public class OtelDemo : ComponentResource
                     ["envOverrides"] = new [] {
                         new Dictionary<string, object> {
                             ["name"] = "OTEL_COLLECTOR_NAME",
-                            ["value"] = args.CollectorName
+                            ["valueFrom"] = new Dictionary<string, object> {
+                                ["fieldRef"] = new Dictionary<string, object> {
+                                    ["fieldPath"] = "status.hostIP"
+                                }
+                            }
                         }
                     }
                 },
