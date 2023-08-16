@@ -1,0 +1,22 @@
+mode: deployment
+nameOverride: collector
+resources:
+  limits:
+    cpu: 1
+    memory: 1Gi
+presets:
+  clusterMetrics:
+    enabled: true
+image:
+  tag: "0.81.0"
+config:
+  exporters:
+    otlp:
+      endpoint: ${OTEL_COLLECTOR_NAME}:4317
+      tls:
+        insecure: true
+
+  service:
+    pipelines:
+      metrics:
+        exporters: [otlp]

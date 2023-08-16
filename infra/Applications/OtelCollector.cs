@@ -51,7 +51,7 @@ public class OtelCollector : ComponentResource
             },
         };
 
-        var otelCollectorRelease = new Release("otel-collector", new ReleaseArgs {
+        var otelCollectorPodTelemetry = new Release("otel-collector", new ReleaseArgs {
             Chart = "opentelemetry-collector",
             Name = "otel-collector",
             Version = "0.66.0",
@@ -68,7 +68,36 @@ public class OtelCollector : ComponentResource
             Provider = options?.Provider!
         });
 
-        this.CollectorName = Output.Format($"{otelCollectorRelease.Namespace}.{otelCollectorRelease.Name}");
+        var otelCollectorClusterMetrics = new Release("otel-collector-cluster-metrics", new ReleaseArgs {
+            Chart = "opentelemetry-collector",
+            Name = "otel-collector-cluster-metrics",
+            Version = "0.66.0",
+            Namespace = otelColNamespace.Metadata.Apply(m => m.Name),
+            RepositoryOpts = new RepositoryOptsArgs {
+                Repo = "https://open-telemetry.github.io/opentelemetry-helm-charts"
+            },
+            DependencyUpdate = true,
+            ValueYamlFiles = new FileAsset("./config-files/collector/values-clustermetrics.yaml"),
+            Values = new Dictionary<string, object> {
+                ["extraEnvs"] = new []{
+                    new Dictionary<string, object> {
+                        ["name"] = "OTEL_COLLECTOR_NAME",
+                        ["valueFrom"] = new Dictionary<string, object> {
+                            ["fieldRef"] = new Dictionary<string, object> {
+                                ["fieldPath"] = "status.hostIP"
+                            }
+                        }
+                    }
+                }
+            }
+        }, new CustomResourceOptions
+        {
+            IgnoreChanges = { "resourceNames" },
+            Provider = options?.Provider!
+        });
+
+
+        this.CollectorName = Output.Format($"{otelCollectorPodTelemetry.Namespace}.{otelCollectorPodTelemetry.Name}");
     }
 
 
