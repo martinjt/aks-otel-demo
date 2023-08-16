@@ -7,8 +7,7 @@ I advise using azure blob, and therefore you login using this:
 ```shell
 cd infra
 az login
-export AZURE_STORAGE_ACCOUNT=<storageaccount>
-pulumi login azblob://<container>
+pulumi login azblob://<container>?storage_account=<storageaccount>
 ```
 
 Then select the stack you're working on
