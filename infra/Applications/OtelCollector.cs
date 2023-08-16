@@ -54,7 +54,7 @@ public class OtelCollector : ComponentResource
         var otelCollectorRelease = new Release("otel-collector", new ReleaseArgs {
             Chart = "opentelemetry-collector",
             Name = "otel-collector",
-            Version = "0.59.2",
+            Version = "0.66.0",
             Namespace = otelColNamespace.Metadata.Apply(m => m.Name),
             RepositoryOpts = new RepositoryOptsArgs {
                 Repo = "https://open-telemetry.github.io/opentelemetry-helm-charts"
