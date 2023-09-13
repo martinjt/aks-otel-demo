@@ -42,8 +42,9 @@ jobs:
           diff: true
           color: always
           config-map: |
-            dns-zone-id: { value: ${{ secrets.DNS_ZONE_ID }} }
             honeycombKey: { value: ${{ secrets.HONEYCOMB_API_KEY }} }
+            dnsZoneName: { value: ${{ secrets.DNS_ZONE_NAME }} }
+            dnsResourceGroup: { value: ${{secrets.DNS_RESOURCE_GROUP }} }
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}

@@ -69,7 +69,7 @@ public class OtelDemo : ComponentResource
             Spec = new IngressSpecArgs {
                 IngressClassName = "webapprouting.kubernetes.azure.com",
                 Rules = new IngressRuleArgs {
-                    Host = "www.demo.onlyspans.com",
+                    Host = Output.Format($"www.{args.DomainName}"),
                     Http = new HTTPIngressRuleValueArgs {
                         Paths = new [] {
                             new HTTPIngressPathArgs {
@@ -130,4 +130,5 @@ public class OtelDemo : ComponentResource
 public class OtelDemoArgs
 {
     public Input<string> CollectorName { get; set; } = null!;
+    public Input<string> DomainName { get; set; } = null!;
 }

@@ -47,7 +47,6 @@ public class AKSCluster : ComponentResource
                 }
             });
 
-        var dnsZoneId = config.RequireSecret("dns-zone-id");
         var cluster = new ManagedCluster(name, new ManagedClusterArgs
         {
             ResourceGroupName = resourceGroup.Name,
@@ -80,7 +79,7 @@ public class AKSCluster : ComponentResource
                 WebAppRouting = new ManagedClusterIngressProfileWebAppRoutingArgs
                 {
                     Enabled = true,
-                    DnsZoneResourceId = dnsZoneId
+                    DnsZoneResourceId = args.DnsZoneId
                 }
             }
         }, new CustomResourceOptions { IgnoreChanges = { "agentPoolProfiles" } });
@@ -102,7 +101,7 @@ public class AKSCluster : ComponentResource
             PrincipalId = cluster.IngressProfile.Apply(ip => ip?.WebAppRouting!.Identity.ObjectId!),
             PrincipalType = PrincipalType.ServicePrincipal,
             RoleDefinitionId = DnsZoneContributorRoleDefinitionId,
-            Scope = dnsZoneId
+            Scope = args.DnsZoneId
         });
 
         // Export the KubeConfig
@@ -146,6 +145,7 @@ public class AKSCluster : ComponentResource
 public class AKSClusterArgs : Pulumi.ResourceArgs
 {
     public bool CreateApplicationGateway { get; set; } = false;
+    public Input<string> DnsZoneId { get; set; } = null!;
 }
 
 internal static class ExtensionForCluster

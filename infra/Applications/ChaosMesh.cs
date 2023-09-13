@@ -6,6 +6,7 @@ using Pulumi.Kubernetes.Helm.V3;
 using Pulumi.Kubernetes.Types.Inputs.Helm.V3;
 using Pulumi.Kubernetes.Rbac.V1;
 using Pulumi.Kubernetes.Types.Inputs.Rbac.V1;
+using System.Collections.Generic;
 
 namespace infra.Applications;
 
@@ -31,6 +32,17 @@ public class ChaosMesh : ComponentResource
                 Repo = "https://charts.chaos-mesh.org"
             },
             ValueYamlFiles = new FileAsset("./config-files/chaos-mesh/values.yaml"),
+            Values = new Dictionary<string, object> {
+                ["dashboard"] = new Dictionary<string, object> {
+                    ["ingress"] = new Dictionary<string, object> {
+                        ["hosts"] = new [] {
+                            new Dictionary<string, object> {
+                                ["name"] = Output.Format($"chaos.{args.DomainName}")
+                            }
+                        }
+                    }
+                }
+            },
         }, new CustomResourceOptions { Provider = options?.Provider!});
 
         ViewerRole = CreateViewRole(args, options);
@@ -154,4 +166,5 @@ public class ChaosMesh : ComponentResource
 public class ChaosMeshArgs : ResourceArgs
 {
     public Input<string> OtelDemoNamespace { get; set; } = null!;
+    public Input<string> DomainName { get; set; } = null!;
 }
