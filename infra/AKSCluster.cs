@@ -117,7 +117,8 @@ public class AKSCluster : ComponentResource
 
         this.Provider = new K8s.Provider("k8s-provider", new K8s.ProviderArgs
         {
-            KubeConfig = KubeConfig
+            KubeConfig = KubeConfig,
+            EnableServerSideApply = true
         });
 
         this.ClusterName = cluster.Name;
