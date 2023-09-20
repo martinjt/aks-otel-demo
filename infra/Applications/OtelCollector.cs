@@ -78,18 +78,7 @@ public class OtelCollector : ComponentResource
             },
             DependencyUpdate = true,
             ValueYamlFiles = new FileAsset("./config-files/collector/values-clustermetrics.yaml"),
-            Values = new Dictionary<string, object> {
-                ["extraEnvs"] = new []{
-                    new Dictionary<string, object> {
-                        ["name"] = "OTEL_COLLECTOR_NAME",
-                        ["valueFrom"] = new Dictionary<string, object> {
-                            ["fieldRef"] = new Dictionary<string, object> {
-                                ["fieldPath"] = "status.hostIP"
-                            }
-                        }
-                    }
-                }
-            }
+            Values = values
         }, new CustomResourceOptions
         {
             IgnoreChanges = { "resourceNames" },
