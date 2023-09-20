@@ -1,0 +1,31 @@
+mode: deployment
+nameOverride: cluster-collector
+resources:
+  limits:
+    cpu: 1
+    memory: 1Gi
+presets:
+  kubernetesEvents:
+    enabled: true
+image:
+  tag: "0.81.0"
+config:
+  receivers:
+    prometheus: null
+  exporters:
+    otlp/logging:
+      endpoint: api.honeycomb.io:443
+      headers:
+        x-honeycomb-team: ${HONEYCOMB_API_KEY}
+        x-honeycomb-dataset: "k8s-events"
+
+  service:
+    pipelines:
+      traces: null
+      metrics: null
+      logs:
+        exporters: [otlp/logging]
+    telemetry:
+      logs:
+        level: "debug"
+      metrics: null

@@ -60,8 +60,10 @@ public class OtelCollector : ComponentResource
                 Repo = "https://open-telemetry.github.io/opentelemetry-helm-charts"
             },
             DependencyUpdate = true,
-            ValueYamlFiles = new FileAsset("./config-files/collector/values.yaml"),
-            Values = values
+            ValueYamlFiles = new FileAsset("./config-files/collector/values-daemonset.yaml"),
+            Values = values,
+            SkipAwait = true
+
         }, new CustomResourceOptions
         {
             IgnoreChanges = { "resourceNames" },
@@ -77,8 +79,9 @@ public class OtelCollector : ComponentResource
                 Repo = "https://open-telemetry.github.io/opentelemetry-helm-charts"
             },
             DependencyUpdate = true,
-            ValueYamlFiles = new FileAsset("./config-files/collector/values-clustermetrics.yaml"),
-            Values = values
+            ValueYamlFiles = new FileAsset("./config-files/collector/values-deployment.yaml"),
+            Values = values,
+            SkipAwait = true
         }, new CustomResourceOptions
         {
             IgnoreChanges = { "resourceNames" },
