@@ -70,6 +70,26 @@ public class OtelCollector : ComponentResource
             Provider = options?.Provider!
         });
 
+        var otelCollectorKubeletStats = new Release("otel-collector-kubeletstats", new ReleaseArgs {
+            Chart = "opentelemetry-collector",
+            Name = "otel-collector-kubeletstats",
+            Version = "0.66.0",
+            Namespace = otelColNamespace.Metadata.Apply(m => m.Name),
+            RepositoryOpts = new RepositoryOptsArgs {
+                Repo = "https://open-telemetry.github.io/opentelemetry-helm-charts"
+            },
+            DependencyUpdate = true,
+            ValueYamlFiles = new FileAsset("./config-files/collector/values-kubeletstats.yaml"),
+            Values = values,
+            SkipAwait = true
+
+        }, new CustomResourceOptions
+        {
+            IgnoreChanges = { "resourceNames" },
+            Provider = options?.Provider!
+        });
+
+
         var otelCollectorClusterMetrics = new Release("otel-collector-cluster-metrics", new ReleaseArgs {
             Chart = "opentelemetry-collector",
             Name = "otel-collector-cluster-metrics",
