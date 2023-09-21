@@ -119,9 +119,11 @@ config:
           - kubeletstats
         processors:
           - k8sattributes
-          - metricstransform/podnetwork_aggregation
-          - metricstransform/nodenetwork_aggregation
-          - filter/networkmetrics
+          - memory_limiter
+          - batch
+    #      - metricstransform/podnetwork_aggregation
+    #      - metricstransform/nodenetwork_aggregation
+    #      - filter/networkmetrics
         exporters: [otlp/kubelet_metrics]
       metrics/default:
         exporters:
