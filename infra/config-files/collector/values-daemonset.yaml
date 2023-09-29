@@ -5,8 +5,8 @@ resources:
     cpu: 1
     memory: 1Gi
 presets:
-  # kubeletMetrics:
-  #   enabled: true
+  kubeletMetrics:
+    enabled: true
   kubernetesAttributes:
     enabled: true
 image:
@@ -23,6 +23,17 @@ config:
               - https://*
           endpoint: 0.0.0.0:4318
   processors:
+    kubeletstats:
+      collection_interval: 30s
+      metric_groups:
+        - node
+        - pod
+    k8sattributes:
+      extract:
+        labels:
+          - tag_name: k8s.component.name
+            key: app.kubernetes.io/component
+            from: pod
   exporters:
     otlp/refinery:
       endpoint: ${REFINERY_ADDRESS}:4317
@@ -36,11 +47,6 @@ config:
       headers:
         x-honeycomb-team: ${HONEYCOMB_API_KEY}
         x-honeycomb-dataset: service-metrics
-    # otlp/kubelet_metrics:
-    #   endpoint: api.honeycomb.io:443
-    #   headers:
-    #     x-honeycomb-team: ${HONEYCOMB_API_KEY}
-    #     x-honeycomb-dataset: "kubelet-metrics"
 
     otlp/logging:
       endpoint: api.honeycomb.io:443
@@ -50,11 +56,9 @@ config:
 
   service:
     pipelines:
-      metrics: 
+      metrics:
         exporters: [otlp/metrics]
       logs:
         exporters: [otlp/logging]
       traces:
         exporters: [otlp/refinery]
-    telemetry:
-      metrics: null
