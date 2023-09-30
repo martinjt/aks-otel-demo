@@ -8,7 +8,7 @@ presets:
   kubernetesEvents:
     enabled: true
 image:
-  tag: "0.81.0"
+  tag: "0.86.0"
 config:
   receivers:
     prometheus: null

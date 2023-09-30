@@ -10,9 +10,14 @@ presets:
   kubernetesAttributes:
     enabled: true
 image:
-  tag: "0.81.0"
+  tag: "0.86.0"
 config:
   receivers:
+    kubeletstats:
+      collection_interval: 30s
+      metric_groups:
+        - node
+        - pod
     otlp:
       protocols:
         grpc:
@@ -23,11 +28,6 @@ config:
               - https://*
           endpoint: 0.0.0.0:4318
   processors:
-    kubeletstats:
-      collection_interval: 30s
-      metric_groups:
-        - node
-        - pod
     k8sattributes:
       extract:
         labels:
