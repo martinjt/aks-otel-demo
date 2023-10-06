@@ -54,7 +54,7 @@ public class OtelCollector : ComponentResource
         var otelCollectorPodTelemetry = new Release("otel-collector", new ReleaseArgs {
             Chart = "opentelemetry-collector",
             Name = "otel-collector",
-            Version = "0.66.0",
+            Version = "0.69.2",
             Namespace = otelColNamespace.Metadata.Apply(m => m.Name),
             RepositoryOpts = new RepositoryOptsArgs {
                 Repo = "https://open-telemetry.github.io/opentelemetry-helm-charts"
@@ -73,7 +73,7 @@ public class OtelCollector : ComponentResource
         var otelCollectorClusterMetrics = new Release("otel-collector-cluster-metrics", new ReleaseArgs {
             Chart = "opentelemetry-collector",
             Name = "otel-collector-cluster-metrics",
-            Version = "0.66.0",
+            Version = "0.69.2",
             Namespace = otelColNamespace.Metadata.Apply(m => m.Name),
             RepositoryOpts = new RepositoryOptsArgs {
                 Repo = "https://open-telemetry.github.io/opentelemetry-helm-charts"

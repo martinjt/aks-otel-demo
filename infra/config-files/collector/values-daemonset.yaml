@@ -9,6 +9,8 @@ presets:
     enabled: true
   kubernetesAttributes:
     enabled: true
+    extractAllPodLabels: true
+    extractAllPodAnnotations: true
 image:
   tag: "0.86.0"
 config:
@@ -27,13 +29,6 @@ config:
               - http://*
               - https://*
           endpoint: 0.0.0.0:4318
-  processors:
-    k8sattributes:
-      extract:
-        labels:
-          - tag_name: k8s.component.name
-            key: app.kubernetes.io/component
-            from: pod
   exporters:
     otlp/refinery:
       endpoint: ${REFINERY_ADDRESS}:4317
