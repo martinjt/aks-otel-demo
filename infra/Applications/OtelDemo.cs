@@ -49,6 +49,12 @@ public class OtelDemo : ComponentResource
                     ["schedulingRules"] = GenerateSchedulingRules("otel-demo", serviceName)
                 });
 
+        values.Add(
+            "opentelemetry-collector", new Dictionary<string, object> {
+                ["enabled"] = false
+            }
+        );
+
         var otelDemoRelease = new Release("otel-demo", new ReleaseArgs {
             Chart = "../opentelemetry-helm-charts/charts/opentelemetry-demo",
             Name = "otel-demo",
