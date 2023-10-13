@@ -81,20 +81,35 @@ public class AKSCluster : ComponentResource
                     Enabled = true,
                     DnsZoneResourceId = args.DnsZoneId
                 }
+            },
+            AgentPoolProfiles = new[]
+            {
+                new ManagedClusterAgentPoolProfileArgs
+                {
+                    Name = "basepool",
+                    Count = 1,
+                    MaxPods = 110,
+                    Mode = AgentPoolMode.System,
+                    OsType = OSType.Linux,
+                    Type = AgentPoolType.VirtualMachineScaleSets,
+                    VmSize = VirtualMachineSizeTypes.Standard_A2_v2.ToString(),
+                }
             }
-        }, new CustomResourceOptions { IgnoreChanges = { "agentPoolProfiles" } });
+        });
 
         var agentPool = new AgentPool("agents", new AgentPoolArgs {
             ResourceGroupName = resourceGroup.Name,
-            Count = 2,
+            Count = 3,
             MaxPods = 110,
-            Mode = AgentPoolMode.System,
-            AgentPoolName = "aksagentpool",
+            Mode = AgentPoolMode.User,
             OsType = OSType.Linux,
             Type = AgentPoolType.VirtualMachineScaleSets,
-            VmSize = VirtualMachineSizeTypes.Standard_D4_v3.ToString(),
+            VmSize = VirtualMachineSizeTypes.Standard_DS2_v2.ToString(),
             ResourceName = cluster.Name,
-        });
+        }, new CustomResourceOptions { 
+            DeletedWith = cluster,
+            ReplaceOnChanges = { "vmSize" },
+            DeleteBeforeReplace = true });
 
         var roleAssignment = new RoleAssignment("cluster-dns-contributor", new()
         {
