@@ -55,7 +55,3 @@ config:
       logs:
         processors: [ memory_limiter, transform/events, batch ]
         exporters: [otlp/logging]
-    telemetry:
-      logs:
-        level: "debug"
-      metrics: null
