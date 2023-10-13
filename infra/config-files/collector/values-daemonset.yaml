@@ -1,9 +1,5 @@
 mode: daemonset
 nameOverride: collector
-resources:
-  limits:
-    cpu: 1
-    memory: 1Gi
 presets:
   kubeletMetrics:
     enabled: true
@@ -15,6 +11,8 @@ image:
   tag: "0.86.0"
 config:
   receivers:
+    jaeger: null
+    zipkin: null
     kubeletstats:
       collection_interval: 30s
       metric_groups:
