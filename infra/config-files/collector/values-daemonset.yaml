@@ -47,11 +47,28 @@ config:
         x-honeycomb-team: ${HONEYCOMB_API_KEY}
         x-honeycomb-dataset: service-logs
 
+    otlp/traces-eu:
+      endpoint: api.eu1.honeycomb.io:443
+      headers:
+        x-honeycomb-team: ${HONEYCOMB_API_KEY_EU}
+
+    otlp/metrics-eu:
+      endpoint: api.eu1.honeycomb.io:443
+      headers:
+        x-honeycomb-team: ${HONEYCOMB_API_KEY_EU}
+        x-honeycomb-dataset: service-metrics
+
+    otlp/logging-eu:
+      endpoint: api.eu1.honeycomb.io:443
+      headers:
+        x-honeycomb-team: ${HONEYCOMB_API_KEY_EU}
+        x-honeycomb-dataset: service-logs
+
   service:
     pipelines:
       metrics:
-        exporters: [otlp/metrics]
+        exporters: [otlp/metrics, otlp/metrics-eu]
       logs:
-        exporters: [otlp/logging]
+        exporters: [otlp/logging, otlp/logging-eu]
       traces:
-        exporters: [otlp/refinery]
+        exporters: [otlp/refinery, otlp/traces-eu]

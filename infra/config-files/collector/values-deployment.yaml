@@ -13,7 +13,7 @@ image:
   tag: "0.86.0"
 config:
   receivers:
-    prometheus: null
+    zipkin: null
   processors:
     transform/events:
       error_mode: ignore
@@ -47,11 +47,22 @@ config:
         "x-honeycomb-team": "${env:HONEYCOMB_API_KEY}"
         "x-honeycomb-dataset": "k8s-metrics"
 
+    otlp/logging-eu:
+      endpoint: api.eu1.honeycomb.io:443
+      headers:
+        x-honeycomb-team: ${env:HONEYCOMB_API_KEY}
+        x-honeycomb-dataset: "k8s-events"
+    otlp/k8s-metrics-eu:
+      endpoint: "api.eu1.honeycomb.io:443"
+      headers:
+        "x-honeycomb-team": "${env:HONEYCOMB_API_KEY}"
+        "x-honeycomb-dataset": "k8s-metrics"
+
   service:
     pipelines:
-      traces: null
+#      traces: null
       metrics:
-        exporters: [ otlp/k8s-metrics ]
+        exporters: [ otlp/k8s-metrics, otlp/k8s-metrics-eu ]
       logs:
         processors: [ memory_limiter, transform/events, batch ]
-        exporters: [otlp/logging]
+        exporters: [otlp/logging, otlp/logging-eu]

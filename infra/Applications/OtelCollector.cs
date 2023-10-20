@@ -15,6 +15,7 @@ public class OtelCollector : ComponentResource
     {
         var config = new Config();
         var apiKey = config.RequireSecret("honeycombKey");
+        var apiKeyEU = config.RequireSecret("honeycombKeyEU");
 
         var otelColNamespace = new Namespace("otel-col", new NamespaceArgs {
             Metadata = new ObjectMetaArgs {
@@ -32,6 +33,16 @@ public class OtelCollector : ComponentResource
             }
         }, new CustomResourceOptions { Provider = options?.Provider!});
 
+        var secretApiKeyEU = new Secret("honeycomb-api-key-otel-collector-eu", new SecretArgs
+        {
+            Metadata = new ObjectMetaArgs {
+                Namespace = otelColNamespace.Metadata.Apply(m => m.Name)
+            },
+            StringData = {
+                ["honeycomb-api-key"] = apiKey
+            }
+        }, new CustomResourceOptions { Provider = options?.Provider!});
+
 
         var values =new Dictionary<string, object> {
             ["extraEnvs"] = new [] {
@@ -40,6 +51,15 @@ public class OtelCollector : ComponentResource
                     ["valueFrom"] = new Dictionary<string, object> {
                         ["secretKeyRef"] = new Dictionary<string, object> {
                             ["name"] = secretApiKey.Id.Apply(a => a.Split("/")[1]),
+                            ["key"] = "honeycomb-api-key"
+                        }
+                    }
+                },
+                new Dictionary<string, object> {
+                    ["name"] = "HONEYCOMB_API_KEY_EU",
+                    ["valueFrom"] = new Dictionary<string, object> {
+                        ["secretKeyRef"] = new Dictionary<string, object> {
+                            ["name"] = secretApiKeyEU.Id.Apply(a => a.Split("/")[1]),
                             ["key"] = "honeycomb-api-key"
                         }
                     }
@@ -63,7 +83,6 @@ public class OtelCollector : ComponentResource
             ValueYamlFiles = new FileAsset("./config-files/collector/values-daemonset.yaml"),
             Values = values,
             SkipAwait = true
-
         }, new CustomResourceOptions
         {
             IgnoreChanges = { "resourceNames" },
@@ -81,7 +100,8 @@ public class OtelCollector : ComponentResource
             DependencyUpdate = true,
             ValueYamlFiles = new FileAsset("./config-files/collector/values-deployment.yaml"),
             Values = values,
-            SkipAwait = true
+            SkipAwait = true,
+            AllowNullValues = true
         }, new CustomResourceOptions
         {
             IgnoreChanges = { "resourceNames" },
