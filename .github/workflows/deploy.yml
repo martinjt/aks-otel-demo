@@ -43,6 +43,7 @@ jobs:
           color: always
           config-map: |
             honeycombKey: { value: ${{ secrets.HONEYCOMB_API_KEY }} }
+            honeycombKeyEU: { value: ${{ secrets.HONEYCOMB_API_KEY_EU }} }
             dnsZoneName: { value: ${{ secrets.DNS_ZONE_NAME }} }
             dnsResourceGroup: { value: ${{secrets.DNS_RESOURCE_GROUP }} }
         env:
