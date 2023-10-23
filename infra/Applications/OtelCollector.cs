@@ -39,7 +39,7 @@ public class OtelCollector : ComponentResource
                 Namespace = otelColNamespace.Metadata.Apply(m => m.Name)
             },
             StringData = {
-                ["honeycomb-api-key"] = apiKey
+                ["honeycomb-api-key"] = apiKeyEU
             }
         }, new CustomResourceOptions { Provider = options?.Provider!});
 
