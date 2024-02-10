@@ -1,8 +1,5 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/docker-in-docker
 {
-	"name": "Docker in Docker",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"name": "AKS OpenTelemetry Demo",
 	"image": "mcr.microsoft.com/devcontainers/base:bullseye",
 
 	"features": {
@@ -12,26 +9,26 @@
 			"moby": "true"
 		},
 		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {},
+		"ghcr.io/devcontainers-contrib/features/pulumi:1": {},
+		"ghcr.io/dhoeric/features/k9s:1": {},
 		"ghcr.io/devcontainers/features/common-utils:2": {
 			"configureZshAsDefaultShell": true 
 		},
-		"ghcr.io/devcontainers/features/dotnet:1": {
-            "version": "7.0"
+		"ghcr.io/devcontainers/features/dotnet:2": {
+            "version": "8.0",
+			"additionalVersions": "7.0"
         },
 		"ghcr.io/devcontainers/features/azure-cli:1": {}
 	},
-
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
-
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postStartCommand": "minikube start"
-
-	"postCreateCommand": "bash .devcontainer/post-create.sh"
-
-	// Configure tool-specific properties.
-	// "customizations": {},
-
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-dotnettools.csdevkit",
+				"ms-kubernetes-tools.vscode-aks-tools",
+				"ms-azuretools.vscode-docker",
+				"ms-kubernetes-tools.vscode-kubernetes-tools",
+				"redhat.vscode-yaml"
+			]
+		}
+	}
 }
