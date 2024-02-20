@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Pulumi;
 using infra.Applications;
 using Pulumi.AzureNative.Network;
@@ -21,8 +21,12 @@ return await Deployment.RunAsync(() =>
     var refinery = new Refinery("refinery", new RefineryArgs(), 
         new ComponentResourceOptions { Provider = cluster.Provider });
 
+    var aspire = new Aspire("aspire", new AspireArgs()
+        , new ComponentResourceOptions { Provider = cluster.Provider });
+
     var otelCollector = new OtelCollector("otel-collector", new OtelCollectorArgs{
-        RefineryName = refinery.RefineryServiceName
+        RefineryName = refinery.RefineryServiceName,
+        AspireHostname = aspire.AspireServiceName
     }, new ComponentResourceOptions { Provider = cluster.Provider });
 
     var otelDemo = new OtelDemo("otel-demo", new OtelDemoArgs {

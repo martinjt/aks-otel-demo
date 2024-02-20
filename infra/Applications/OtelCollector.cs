@@ -68,6 +68,10 @@ public class OtelCollector : ComponentResource
                     ["name"] = "REFINERY_ADDRESS",
                     ["value"] = args.RefineryName
                 },
+                new Dictionary<string, object> {
+                    ["name"] = "ASPIRE_ADDRESS",
+                    ["value"] = args.AspireHostname
+                },
             },
         };
 
@@ -119,4 +123,5 @@ public class OtelCollector : ComponentResource
 public class OtelCollectorArgs
 {
     public Input<string> RefineryName { get; set; } = null!;
+    public Input<string> AspireHostname { get; set; } = null!;
 }

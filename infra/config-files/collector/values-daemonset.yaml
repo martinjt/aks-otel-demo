@@ -64,11 +64,16 @@ config:
         x-honeycomb-team: ${HONEYCOMB_API_KEY_EU}
         x-honeycomb-dataset: service-logs
 
+    otlp/aspire:
+      endpoint: ${ASPIRE_ADDRESS}:4317
+      tls:
+        insecure: true
+
   service:
     pipelines:
       metrics:
-        exporters: [otlp/metrics, otlp/metrics-eu]
+        exporters: [otlp/metrics, otlp/metrics-eu, otlp/aspire]
       logs:
-        exporters: [otlp/logging, otlp/logging-eu]
+        exporters: [otlp/logging, otlp/logging-eu, otlp/aspire]
       traces:
-        exporters: [otlp/refinery, otlp/traces-eu]
+        exporters: [otlp/refinery, otlp/traces-eu, otlp/aspire]

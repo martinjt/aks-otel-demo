@@ -56,10 +56,15 @@ config:
         "x-honeycomb-team": "${env:HONEYCOMB_API_KEY_EU}"
         "x-honeycomb-dataset": "k8s-metrics"
 
+    otlp/aspire:
+      endpoint: ${ASPIRE_ADDRESS}:4317
+      tls:
+        insecure: true
+
   service:
     pipelines:
       metrics:
-        exporters: [ otlp/k8s-metrics, otlp/k8s-metrics-eu ]
+        exporters: [ otlp/k8s-metrics, otlp/k8s-metrics-eu, otlp/aspire ]
       logs:
         processors: [ memory_limiter, transform/events, batch ]
-        exporters: [otlp/logging, otlp/logging-eu]
+        exporters: [ otlp/logging, otlp/logging-eu, otlp/aspire ]
