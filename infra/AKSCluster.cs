@@ -59,7 +59,7 @@ public class AKSCluster : ComponentResource
             },
             DnsPrefix = "otel-demo",
             EnableRBAC = true,
-            KubernetesVersion = "1.27.1",
+            KubernetesVersion = "1.29.0",
             LinuxProfile = new ContainerServiceLinuxProfileArgs
             {
                 AdminUsername = "testuser",

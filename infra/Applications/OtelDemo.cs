@@ -56,9 +56,12 @@ public class OtelDemo : ComponentResource
         );
 
         var otelDemoRelease = new Release("otel-demo", new ReleaseArgs {
-            Chart = "../opentelemetry-helm-charts/charts/opentelemetry-demo",
+            Chart = "opentelemetry-demo",
             Name = "otel-demo",
-            Version = "0.1.0",
+            RepositoryOpts = new RepositoryOptsArgs {
+                Repo = "https://open-telemetry.github.io/opentelemetry-helm-charts"
+            },
+            Version = "0.28.3",
             Namespace = otelDemoNamespace.Metadata.Apply(m => m.Name),
             DependencyUpdate = true,
             Values = values
