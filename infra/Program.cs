@@ -3,6 +3,8 @@ using Pulumi;
 using infra.Applications;
 using Pulumi.AzureNative.Network;
 
+bool CreateChaosMesh = false;
+
 return await Deployment.RunAsync(() =>
 {
     var config = new Config();
@@ -18,15 +20,17 @@ return await Deployment.RunAsync(() =>
         DnsZoneId = dnsZone.Apply(d => d.Id)
     });
     
+    var outputs = new Dictionary<string, object?>
+    {
+        ["clusterName"] = cluster.ClusterName,
+        ["clusterResourceGroup"] = cluster.ClusterResourceGroup,
+    };
+
     var refinery = new Refinery("refinery", new RefineryArgs(), 
         new ComponentResourceOptions { Provider = cluster.Provider });
 
-    var aspire = new Aspire("aspire", new AspireArgs()
-        , new ComponentResourceOptions { Provider = cluster.Provider });
-
     var otelCollector = new OtelCollector("otel-collector", new OtelCollectorArgs{
         RefineryName = refinery.RefineryServiceName,
-        AspireHostname = aspire.AspireServiceName
     }, new ComponentResourceOptions { Provider = cluster.Provider });
 
     var otelDemo = new OtelDemo("otel-demo", new OtelDemoArgs {
@@ -34,16 +38,15 @@ return await Deployment.RunAsync(() =>
         DomainName = dnsZoneName
     }, new ComponentResourceOptions { Provider = cluster.Provider });
 
-    var chaosMesh = new ChaosMesh("chaos-mesh", new ChaosMeshArgs {
-        OtelDemoNamespace = otelDemo.Namespace,
-        DomainName = dnsZoneName
-    }, new ComponentResourceOptions { Provider = cluster.Provider });
-
-    return new Dictionary<string, object?>
+    if (CreateChaosMesh)
     {
-        ["clusterName"] = cluster.ClusterName,
-        ["clusterResourceGroup"] = cluster.ClusterResourceGroup,
-        ["chaosMeshViewerRole"] = chaosMesh.ViewerRole,
-        ["chaosMeshManagerRole"] = chaosMesh.ManagerRole
-    };
+        var chaosMesh = new ChaosMesh("chaos-mesh", new ChaosMeshArgs {
+            OtelDemoNamespace = otelDemo.Namespace,
+            DomainName = dnsZoneName
+        }, new ComponentResourceOptions { Provider = cluster.Provider });
+        outputs.Add("chaosMeshViewerRole", chaosMesh.ViewerRole);
+        outputs.Add("chaosMeshManagerRole", chaosMesh.ManagerRole);
+    }
+
+    return outputs;
 });

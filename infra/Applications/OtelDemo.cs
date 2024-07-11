@@ -29,17 +29,7 @@ public class OtelDemo : ComponentResource
 
         var values =new Dictionary<string, object> {
                 ["default"] = new Dictionary<string, object> {
-                    ["replicas"] = 2,
-                    ["envOverrides"] = new [] {
-                        new Dictionary<string, object> {
-                            ["name"] = "OTEL_COLLECTOR_NAME",
-                            ["valueFrom"] = new Dictionary<string, object> {
-                                ["fieldRef"] = new Dictionary<string, object> {
-                                    ["fieldPath"] = "status.hostIP"
-                                }
-                            }
-                        }
-                    }
+                    ["replicas"] = 2
                 },
                 ["components"] = new Dictionary<string, object>()
             };
@@ -48,12 +38,6 @@ public class OtelDemo : ComponentResource
                 .Add(serviceName,new Dictionary<string, object> {
                     ["schedulingRules"] = GenerateSchedulingRules("otel-demo", serviceName)
                 });
-
-        values.Add(
-            "opentelemetry-collector", new Dictionary<string, object> {
-                ["enabled"] = false
-            }
-        );
 
         var otelDemoRelease = new Release("otel-demo", new ReleaseArgs {
             Chart = "opentelemetry-demo",
@@ -64,7 +48,8 @@ public class OtelDemo : ComponentResource
             Version = args.DemoVersion,
             Namespace = otelDemoNamespace.Metadata.Apply(m => m.Name),
             DependencyUpdate = true,
-            Values = values
+            Values = values,
+            ValueYamlFiles = new FileAsset("./config-files/demo/values.yaml"),
         }, new CustomResourceOptions
         {
             IgnoreChanges = { "resourceNames" },

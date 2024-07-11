@@ -15,7 +15,6 @@ public class OtelCollector : ComponentResource
     {
         var config = new Config();
         var apiKey = config.RequireSecret("honeycombKey");
-        var apiKeyEU = config.RequireSecret("honeycombKeyEU");
 
         var otelColNamespace = new Namespace("otel-col", new NamespaceArgs {
             Metadata = new ObjectMetaArgs {
@@ -33,17 +32,6 @@ public class OtelCollector : ComponentResource
             }
         }, new CustomResourceOptions { Provider = options?.Provider!});
 
-        var secretApiKeyEU = new Secret("honeycomb-api-key-otel-collector-eu", new SecretArgs
-        {
-            Metadata = new ObjectMetaArgs {
-                Namespace = otelColNamespace.Metadata.Apply(m => m.Name)
-            },
-            StringData = {
-                ["honeycomb-api-key"] = apiKeyEU
-            }
-        }, new CustomResourceOptions { Provider = options?.Provider!});
-
-
         var values =new Dictionary<string, object> {
             ["extraEnvs"] = new [] {
                 new Dictionary<string, object> {
@@ -56,21 +44,8 @@ public class OtelCollector : ComponentResource
                     }
                 },
                 new Dictionary<string, object> {
-                    ["name"] = "HONEYCOMB_API_KEY_EU",
-                    ["valueFrom"] = new Dictionary<string, object> {
-                        ["secretKeyRef"] = new Dictionary<string, object> {
-                            ["name"] = secretApiKeyEU.Id.Apply(a => a.Split("/")[1]),
-                            ["key"] = "honeycomb-api-key"
-                        }
-                    }
-                },
-                new Dictionary<string, object> {
                     ["name"] = "REFINERY_ADDRESS",
                     ["value"] = args.RefineryName
-                },
-                new Dictionary<string, object> {
-                    ["name"] = "ASPIRE_ADDRESS",
-                    ["value"] = args.AspireHostname
                 },
             },
         };
@@ -78,7 +53,7 @@ public class OtelCollector : ComponentResource
         var otelCollectorPodTelemetry = new Release("otel-collector", new ReleaseArgs {
             Chart = "opentelemetry-collector",
             Name = "otel-collector",
-            Version = "0.69.2",
+            Version = args.CollectorHelmVersion,
             Namespace = otelColNamespace.Metadata.Apply(m => m.Name),
             RepositoryOpts = new RepositoryOptsArgs {
                 Repo = "https://open-telemetry.github.io/opentelemetry-helm-charts"
@@ -96,7 +71,7 @@ public class OtelCollector : ComponentResource
         var otelCollectorClusterMetrics = new Release("otel-collector-cluster-metrics", new ReleaseArgs {
             Chart = "opentelemetry-collector",
             Name = "otel-collector-cluster-metrics",
-            Version = "0.69.2",
+            Version = args.CollectorHelmVersion,
             Namespace = otelColNamespace.Metadata.Apply(m => m.Name),
             RepositoryOpts = new RepositoryOptsArgs {
                 Repo = "https://open-telemetry.github.io/opentelemetry-helm-charts"
@@ -123,5 +98,5 @@ public class OtelCollector : ComponentResource
 public class OtelCollectorArgs
 {
     public Input<string> RefineryName { get; set; } = null!;
-    public Input<string> AspireHostname { get; set; } = null!;
+    public Input<string> CollectorHelmVersion { get; set; } = "0.97.1";
 }

@@ -8,12 +8,13 @@ presets:
     extractAllPodLabels: true
     extractAllPodAnnotations: true
 image:
-  tag: "0.86.0"
+  repository: "ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib"
 config:
   receivers:
     jaeger: null
     zipkin: null
     kubeletstats:
+      insecure_skip_verify: true
       collection_interval: 30s
       metric_groups:
         - node
@@ -47,33 +48,14 @@ config:
         x-honeycomb-team: ${HONEYCOMB_API_KEY}
         x-honeycomb-dataset: service-logs
 
-    otlp/traces-eu:
-      endpoint: api.eu1.honeycomb.io:443
-      headers:
-        x-honeycomb-team: ${HONEYCOMB_API_KEY_EU}
-
-    otlp/metrics-eu:
-      endpoint: api.eu1.honeycomb.io:443
-      headers:
-        x-honeycomb-team: ${HONEYCOMB_API_KEY_EU}
-        x-honeycomb-dataset: service-metrics
-
-    otlp/logging-eu:
-      endpoint: api.eu1.honeycomb.io:443
-      headers:
-        x-honeycomb-team: ${HONEYCOMB_API_KEY_EU}
-        x-honeycomb-dataset: service-logs
-
-    otlp/aspire:
-      endpoint: ${ASPIRE_ADDRESS}:4317
-      tls:
-        insecure: true
-
   service:
     pipelines:
       metrics:
-        exporters: [otlp/metrics, otlp/metrics-eu, otlp/aspire]
+        exporters: 
+          - otlp/metrics
       logs:
-        exporters: [otlp/logging, otlp/logging-eu, otlp/aspire]
+        exporters: 
+          - otlp/logging
       traces:
-        exporters: [otlp/refinery, otlp/traces-eu, otlp/aspire]
+        exporters: 
+          - otlp/refinery

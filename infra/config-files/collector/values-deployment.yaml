@@ -10,7 +10,7 @@ presets:
   kubernetesEvents:
     enabled: true
 image:
-  tag: "0.86.0"
+  repository: "ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib"
 config:
   processors:
     transform/events:
@@ -45,26 +45,10 @@ config:
         "x-honeycomb-team": "${env:HONEYCOMB_API_KEY}"
         "x-honeycomb-dataset": "k8s-metrics"
 
-    otlp/logging-eu:
-      endpoint: api.eu1.honeycomb.io:443
-      headers:
-        x-honeycomb-team: ${env:HONEYCOMB_API_KEY_EU}
-        x-honeycomb-dataset: "k8s-events"
-    otlp/k8s-metrics-eu:
-      endpoint: "api.eu1.honeycomb.io:443"
-      headers:
-        "x-honeycomb-team": "${env:HONEYCOMB_API_KEY_EU}"
-        "x-honeycomb-dataset": "k8s-metrics"
-
-    otlp/aspire:
-      endpoint: ${ASPIRE_ADDRESS}:4317
-      tls:
-        insecure: true
-
   service:
     pipelines:
       metrics:
-        exporters: [ otlp/k8s-metrics, otlp/k8s-metrics-eu, otlp/aspire ]
+        exporters: [ otlp/k8s-metrics]
       logs:
         processors: [ memory_limiter, transform/events, batch ]
-        exporters: [ otlp/logging, otlp/logging-eu, otlp/aspire ]
+        exporters: [ otlp/logging ]
