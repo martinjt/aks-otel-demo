@@ -61,7 +61,7 @@ public class OtelDemo : ComponentResource
             RepositoryOpts = new RepositoryOptsArgs {
                 Repo = "https://open-telemetry.github.io/opentelemetry-helm-charts"
             },
-            Version = "0.28.3",
+            Version = args.DemoVersion,
             Namespace = otelDemoNamespace.Metadata.Apply(m => m.Name),
             DependencyUpdate = true,
             Values = values
@@ -140,4 +140,5 @@ public class OtelDemoArgs
 {
     public Input<string> CollectorName { get; set; } = null!;
     public Input<string> DomainName { get; set; } = null!;
+    public Input<string> DemoVersion { get; set; } = "0.32.0";
 }
