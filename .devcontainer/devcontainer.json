@@ -1,24 +1,20 @@
 {
 	"name": "AKS OpenTelemetry Demo",
-	"image": "mcr.microsoft.com/devcontainers/base:bullseye",
+	"image": "mcr.microsoft.com/devcontainers/dotnet:8.0",
 
 	"features": {
-		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2.11.0": {
 			"version": "latest",
 			"enableNonRootDocker": "true",
 			"moby": "true"
 		},
-		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {},
-		"ghcr.io/devcontainers-contrib/features/pulumi:1": {},
-		"ghcr.io/dhoeric/features/k9s:1": {},
-		"ghcr.io/devcontainers/features/common-utils:2": {
+		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1.1.9": {},
+		"ghcr.io/devcontainers-contrib/features/pulumi:1.2.3": {},
+		"ghcr.io/dhoeric/features/k9s:1.0.1": {},
+		"ghcr.io/devcontainers/features/common-utils:2.4.4": {
 			"configureZshAsDefaultShell": true 
 		},
-		"ghcr.io/devcontainers/features/dotnet:2": {
-            "version": "8.0",
-			"additionalVersions": "7.0"
-        },
-		"ghcr.io/devcontainers/features/azure-cli:1": {}
+		"ghcr.io/devcontainers/features/azure-cli:1.2.5": {}
 	},
 	"customizations": {
 		"vscode": {
