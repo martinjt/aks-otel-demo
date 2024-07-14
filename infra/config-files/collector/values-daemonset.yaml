@@ -9,6 +9,10 @@ presets:
     extractAllPodAnnotations: true
 image:
   repository: "ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib"
+
+service:
+  enabled: true
+
 config:
   receivers:
     jaeger: null
