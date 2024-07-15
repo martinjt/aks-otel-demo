@@ -29,7 +29,13 @@ public class OtelDemo : ComponentResource
 
         var values =new Dictionary<string, object> {
                 ["default"] = new Dictionary<string, object> {
-                    ["replicas"] = 2
+                    ["replicas"] = 2,
+                    ["envOverrides"] = new [] {
+                        new Dictionary<string, object> {
+                            ["name"] = "OTEL_COLLECTOR_NAME",
+                            ["value"] = args.CollectorHostName 
+                        }
+                    }
                 },
                 ["components"] = new Dictionary<string, object>()
             };
@@ -123,7 +129,8 @@ public class OtelDemo : ComponentResource
 
 public class OtelDemoArgs
 {
-    public Input<string> CollectorName { get; set; } = null!;
+    public Input<string> CollectorHostName { get; set; } = null!;
+    public Input<string> CollectorNamespace { get; set; } = null!;
     public Input<string> DomainName { get; set; } = null!;
     public Input<string> DemoVersion { get; set; } = "0.32.0";
 }

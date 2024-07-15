@@ -1,5 +1,5 @@
 mode: daemonset
-nameOverride: collector
+
 presets:
   kubeletMetrics:
     enabled: true

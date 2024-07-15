@@ -88,7 +88,7 @@ public class OtelCollector : ComponentResource
         });
 
 
-        this.CollectorName = Output.Format($"{otelCollectorPodTelemetry.Namespace}.{otelCollectorPodTelemetry.Name}");
+        this.CollectorName = Output.Format($"{otelCollectorPodTelemetry.Name}-opentelemetry-collector.{otelCollectorPodTelemetry.Namespace}");
     }
 
 

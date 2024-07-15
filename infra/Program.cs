@@ -34,7 +34,7 @@ return await Deployment.RunAsync(() =>
     }, new ComponentResourceOptions { Provider = cluster.Provider });
 
     var otelDemo = new OtelDemo("otel-demo", new OtelDemoArgs {
-        CollectorName = otelCollector.CollectorName,
+        CollectorHostName = otelCollector.CollectorName,
         DomainName = dnsZoneName
     }, new ComponentResourceOptions { Provider = cluster.Provider });
 
