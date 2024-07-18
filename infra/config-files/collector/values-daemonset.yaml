@@ -23,6 +23,19 @@ config:
       metric_groups:
         - node
         - pod
+      metrics:
+        k8s.node.uptime:
+          enabled: true
+        k8s.pod.uptime:
+          enabled: true
+        k8s.pod.cpu_limit_utilization:
+          enabled: true
+        k8s.pod.cpu_request_utilization:
+          enabled: true
+        k8s.pod.memory_limit_utilization:
+          enabled: true
+        k8s.pod.memory_request_utilization:
+          enabled: true
     otlp:
       protocols:
         grpc:
@@ -53,6 +66,10 @@ config:
         x-honeycomb-dataset: service-logs
 
   service:
+    telemetry:
+      logs:
+        level: debug
+
     pipelines:
       metrics:
         exporters: 
